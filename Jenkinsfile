@@ -1,3 +1,11 @@
+def executeCmd(String cmd) {
+    if (isUnix()) {
+        sh cmd
+    } else {
+        bat cmd
+    }
+}
+
 pipeline {
     agent any
 
@@ -26,14 +34,18 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 echo '=== Stage 2: Installing npm dependencies ==='
-                sh 'npm ci'
+                script {
+                    executeCmd('npm ci')
+                }
             }
         }
 
         stage('Run Automated Tests') {
             steps {
                 echo '=== Stage 3: Running automated unit and integration tests ==='
-                sh 'npm test'
+                script {
+                    executeCmd('npm test')
+                }
             }
         }
 
@@ -42,9 +54,7 @@ pipeline {
                 echo '=== Stage 4: Code Quality Scan ==='
                 script {
                     echo 'SonarQube analysis stage ready. (Uncomment sonar-scanner step once SonarQube server is configured).'
-                    // withSonarQubeEnv('SonarQube-Server') {
-                    //     sh 'sonar-scanner -Dsonar.projectName=gram-mitra-backend -Dsonar.projectKey=gram-mitra-backend'
-                    // }
+                    // executeCmd('sonar-scanner -Dsonar.projectName=gram-mitra-backend -Dsonar.projectKey=gram-mitra-backend')
                 }
             }
         }
@@ -54,7 +64,7 @@ pipeline {
                 echo '=== Stage 5: Security Vulnerability Scan ==='
                 script {
                     echo 'Trivy security scan stage ready. (Uncomment below once Trivy CLI is installed on runner).'
-                    // sh 'trivy fs --severity HIGH,CRITICAL .'
+                    // executeCmd('trivy fs --severity HIGH,CRITICAL .')
                 }
             }
         }
@@ -62,7 +72,9 @@ pipeline {
         stage('Docker Build') {
             steps {
                 echo "=== Stage 6: Building Docker Image ${APP_NAME}:${IMAGE_TAG} ==="
-                sh "docker build -t ${APP_NAME}:${IMAGE_TAG} -t ${APP_NAME}:latest ."
+                script {
+                    executeCmd("docker build -t ${APP_NAME}:${IMAGE_TAG} -t ${APP_NAME}:latest .")
+                }
             }
         }
 
@@ -72,11 +84,11 @@ pipeline {
                 script {
                     echo 'Skipping push to remote registry. Set up credentials with ID docker-registry-credentials to enable remote registry push.'
                     // withCredentials([usernamePassword(credentialsId: DOCKER_CREDENTIALS_ID, usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    //     sh "docker login ${DOCKER_REGISTRY} -u ${DOCKER_USER} -p ${DOCKER_PASS}"
-                    //     sh "docker tag ${APP_NAME}:${IMAGE_TAG} ${DOCKER_REGISTRY}/${APP_NAME}:${IMAGE_TAG}"
-                    //     sh "docker tag ${APP_NAME}:latest ${DOCKER_REGISTRY}/${APP_NAME}:latest"
-                    //     sh "docker push ${DOCKER_REGISTRY}/${APP_NAME}:${IMAGE_TAG}"
-                    //     sh "docker push ${DOCKER_REGISTRY}/${APP_NAME}:latest"
+                    //     executeCmd("docker login ${DOCKER_REGISTRY} -u ${DOCKER_USER} -p ${DOCKER_PASS}")
+                    //     executeCmd("docker tag ${APP_NAME}:${IMAGE_TAG} ${DOCKER_REGISTRY}/${APP_NAME}:${IMAGE_TAG}")
+                    //     executeCmd("docker tag ${APP_NAME}:latest ${DOCKER_REGISTRY}/${APP_NAME}:latest")
+                    //     executeCmd("docker push ${DOCKER_REGISTRY}/${APP_NAME}:${IMAGE_TAG}")
+                    //     executeCmd("docker push ${DOCKER_REGISTRY}/${APP_NAME}:latest")
                     // }
                 }
             }
@@ -85,7 +97,9 @@ pipeline {
         stage('Deploy Application') {
             steps {
                 echo '=== Stage 8: Deploying Application Container ==='
-                sh 'docker compose up -d --build backend'
+                script {
+                    executeCmd('docker compose up -d --build backend')
+                }
             }
         }
     }

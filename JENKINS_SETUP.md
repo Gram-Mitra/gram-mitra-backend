@@ -60,10 +60,26 @@ Navigate to **Manage Jenkins** -> **Plugins** -> **Available plugins** and ensur
 - **Docker Pipeline** (`docker-workflow`)
 - **NodeJS Plugin** (Optional if Node is installed directly inside agent/container)
 
----
+## Step 4: Configure GitHub Credentials & Create the Jenkins Pipeline Job
 
-## Step 4: Create the Jenkins Pipeline Job
+### 4.1 Create a GitHub Personal Access Token (PAT)
+Since GitHub requires token authentication (passwords are deprecated for Git operations):
+1. Go to GitHub -> **Settings** -> **Developer settings** -> **Personal access tokens** -> **Tokens (classic)** (or Fine-grained tokens).
+2. Click **Generate new token (classic)**.
+3. Select scope: **`repo`** (Full control of private repositories).
+4. Copy the generated Token string (e.g. `ghp_...`).
 
+### 4.2 Add GitHub Credentials in Jenkins
+1. Go to **Manage Jenkins** -> **Credentials** -> **System** -> **Global credentials (unrestricted)**.
+2. Click **Add Credentials**:
+   - **Kind**: `Username with password`
+   - **Username**: Your GitHub username (or organization name)
+   - **Password**: Paste your GitHub Personal Access Token (`ghp_...`)
+   - **ID**: `github-token` (or leave blank for auto-generated ID)
+   - **Description**: `GitHub Personal Access Token`
+3. Click **Create**.
+
+### 4.3 Create the Pipeline Job
 1. On the Jenkins dashboard, click **"New Item"**.
 2. Enter item name: `gram-mitra-backend-pipeline`.
 3. Select **"Pipeline"** and click **OK**.
@@ -72,9 +88,10 @@ Navigate to **Manage Jenkins** -> **Plugins** -> **Available plugins** and ensur
    - **Pipeline Section**:
      - Definition: **Pipeline script from SCM**
      - SCM: **Git**
-     - Repository URL: `https://github.com/<your-username>/gram-mitra-backend.git` (or local file/repo path)
-     - Branch Specifier: `*/main` or `*/master`
-     - Script Path: `Jenkinsfile`
+     - Repository URL: `https://github.com/Gram-Mitra/gram-mitra-backend.git`
+     - **Credentials**: Select the `github-token` credential you created in Step 4.2 *(This resolves the "Invalid username or token / Password authentication is not supported" error)*.
+     - **Branch Specifier (blank for 'any')**: Change from `*/master` to **`*/main`** *(Your primary branch is `main`)*.
+     - **Script Path**: `Jenkinsfile`
 5. Click **Save**.
 
 ---
@@ -102,5 +119,6 @@ If you plan to push images to Docker Hub or AWS ECR in Stage 7:
 
 ## Troubleshooting Tips
 
+- **`Cannot run program "sh": CreateProcess error=2`**: Occurs when running native Jenkins on Windows (where `sh` command binary is missing). The [`Jenkinsfile`](file:///c:/Users/kirve/OneDrive/Desktop/gram-mitra/backend/Jenkinsfile) has been updated with a cross-platform helper (`executeCmd`) that automatically detects OS environment and uses Windows Batch (`bat`) on Windows nodes and `sh` on Unix/Linux nodes.
 - **Docker socket permission denied**: If Jenkins inside container cannot communicate with `/var/run/docker.sock`, ensure container runs with root user or add jenkins user to host docker group.
 - **npm command not found**: Ensure `npm` is accessible on the runner host or inside container environment.
