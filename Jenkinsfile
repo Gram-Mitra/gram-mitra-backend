@@ -12,7 +12,7 @@ pipeline {
     environment {
         APP_NAME = 'gram-mitra-backend'
         IMAGE_TAG = "${env.BUILD_NUMBER ?: 'dev'}"
-        DOCKER_REGISTRY = 'docker.io/username' // Change to your Docker Hub username or registry URL
+        DOCKER_REGISTRY = 'ak3806'
         DOCKER_CREDENTIALS_ID = 'docker-registry-credentials'
     }
 
@@ -82,14 +82,13 @@ pipeline {
             steps {
                 echo '=== Stage 7: Pushing Docker Image to Registry ==='
                 script {
-                    echo 'Skipping push to remote registry. Set up credentials with ID docker-registry-credentials to enable remote registry push.'
-                    // withCredentials([usernamePassword(credentialsId: DOCKER_CREDENTIALS_ID, usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    //     executeCmd("docker login ${DOCKER_REGISTRY} -u ${DOCKER_USER} -p ${DOCKER_PASS}")
-                    //     executeCmd("docker tag ${APP_NAME}:${IMAGE_TAG} ${DOCKER_REGISTRY}/${APP_NAME}:${IMAGE_TAG}")
-                    //     executeCmd("docker tag ${APP_NAME}:latest ${DOCKER_REGISTRY}/${APP_NAME}:latest")
-                    //     executeCmd("docker push ${DOCKER_REGISTRY}/${APP_NAME}:${IMAGE_TAG}")
-                    //     executeCmd("docker push ${DOCKER_REGISTRY}/${APP_NAME}:latest")
-                    // }
+                    withCredentials([usernamePassword(credentialsId: DOCKER_CREDENTIALS_ID, usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                        executeCmd("docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}")
+                        executeCmd("docker tag ${APP_NAME}:${IMAGE_TAG} ${DOCKER_REGISTRY}/${APP_NAME}:${IMAGE_TAG}")
+                        executeCmd("docker tag ${APP_NAME}:latest ${DOCKER_REGISTRY}/${APP_NAME}:latest")
+                        executeCmd("docker push ${DOCKER_REGISTRY}/${APP_NAME}:${IMAGE_TAG}")
+                        executeCmd("docker push ${DOCKER_REGISTRY}/${APP_NAME}:latest")
+                    }
                 }
             }
         }
