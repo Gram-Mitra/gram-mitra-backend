@@ -3,9 +3,16 @@ pipeline {
 
     environment {
         APP_NAME = 'gram-mitra-backend'
-        IMAGE_TAG = "${env.BUILD_NUMBER}"
-        DOCKER_REGISTRY = 'your-docker-registry' // e.g. docker.io/username or AWS ECR URL
+        IMAGE_TAG = "${env.BUILD_NUMBER ?: 'dev'}"
+        DOCKER_REGISTRY = 'docker.io/username' // Change to your Docker Hub username or registry URL
         DOCKER_CREDENTIALS_ID = 'docker-registry-credentials'
+    }
+
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '10'))
+        disableConcurrentBuilds()
+        timeout(time: 30, unit: 'MINUTES')
+        timestamps()
     }
 
     stages {
@@ -23,28 +30,32 @@ pipeline {
             }
         }
 
-        stage('Run Tests') {
+        stage('Run Automated Tests') {
             steps {
-                echo '=== Stage 3: Running automated unit/integration tests ==='
+                echo '=== Stage 3: Running automated unit and integration tests ==='
                 sh 'npm test'
             }
         }
 
         stage('Code Quality (SonarQube)') {
             steps {
-                echo '=== Stage 4: Running SonarQube Analysis ==='
-                // withSonarQubeEnv('SonarQube-Server') {
-                //     sh 'sonar-scanner'
-                // }
-                echo 'SonarQube analysis passed.'
+                echo '=== Stage 4: Code Quality Scan ==='
+                script {
+                    echo 'SonarQube analysis stage ready. (Uncomment sonar-scanner step once SonarQube server is configured).'
+                    // withSonarQubeEnv('SonarQube-Server') {
+                    //     sh 'sonar-scanner -Dsonar.projectName=gram-mitra-backend -Dsonar.projectKey=gram-mitra-backend'
+                    // }
+                }
             }
         }
 
-        stage('Security Scan (Trivy)') {
+        stage('Security Vulnerability Scan (Trivy)') {
             steps {
-                echo '=== Stage 5: Scanning filesystem with Trivy ==='
-                // sh 'trivy fs --severity HIGH,CRITICAL .'
-                echo 'Security vulnerability scan passed.'
+                echo '=== Stage 5: Security Vulnerability Scan ==='
+                script {
+                    echo 'Trivy security scan stage ready. (Uncomment below once Trivy CLI is installed on runner).'
+                    // sh 'trivy fs --severity HIGH,CRITICAL .'
+                }
             }
         }
 
@@ -58,34 +69,37 @@ pipeline {
         stage('Docker Push') {
             steps {
                 echo '=== Stage 7: Pushing Docker Image to Registry ==='
-                // withCredentials([usernamePassword(credentialsId: DOCKER_CREDENTIALS_ID, usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                //     sh "docker login -u ${DOCKER_USER} -p ${DOCKER_PASS} ${DOCKER_REGISTRY}"
-                //     sh "docker push ${DOCKER_REGISTRY}/${APP_NAME}:${IMAGE_TAG}"
-                //     sh "docker push ${DOCKER_REGISTRY}/${APP_NAME}:latest"
-                // }
-                echo 'Docker image successfully published.'
+                script {
+                    echo 'Skipping push to remote registry. Set up credentials with ID docker-registry-credentials to enable remote registry push.'
+                    // withCredentials([usernamePassword(credentialsId: DOCKER_CREDENTIALS_ID, usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    //     sh "docker login ${DOCKER_REGISTRY} -u ${DOCKER_USER} -p ${DOCKER_PASS}"
+                    //     sh "docker tag ${APP_NAME}:${IMAGE_TAG} ${DOCKER_REGISTRY}/${APP_NAME}:${IMAGE_TAG}"
+                    //     sh "docker tag ${APP_NAME}:latest ${DOCKER_REGISTRY}/${APP_NAME}:latest"
+                    //     sh "docker push ${DOCKER_REGISTRY}/${APP_NAME}:${IMAGE_TAG}"
+                    //     sh "docker push ${DOCKER_REGISTRY}/${APP_NAME}:latest"
+                    // }
+                }
             }
         }
 
-        stage('Kubernetes / Staging Deploy') {
+        stage('Deploy Application') {
             steps {
-                echo '=== Stage 8: Deploying to Kubernetes cluster ==='
-                // sh "kubectl set image deployment/gram-mitra-backend gram-mitra-backend=${APP_NAME}:${IMAGE_TAG}"
-                echo 'Deployment successfully rolled out.'
+                echo '=== Stage 8: Deploying Application Container ==='
+                sh 'docker compose up -d --build backend'
             }
         }
     }
 
     post {
         always {
-            echo '=== CI/CD Pipeline Execution Completed ==='
+            echo '=== CI/CD Pipeline Execution Finished ==='
             cleanWs()
         }
         success {
-            echo "Pipeline succeeded! Build #${env.BUILD_NUMBER} is ready."
+            echo "✅ Pipeline succeeded! Build #${env.BUILD_NUMBER} completed successfully."
         }
         failure {
-            echo "Pipeline failed! Please check logs for Build #${env.BUILD_NUMBER}."
+            echo "❌ Pipeline failed! Please inspect logs for Build #${env.BUILD_NUMBER}."
         }
     }
 }
