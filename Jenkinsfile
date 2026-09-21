@@ -23,6 +23,10 @@ pipeline {
         timestamps()
     }
 
+    triggers {
+        pollSCM('H/1 * * * *')
+    }
+
     stages {
         stage('Checkout Code') {
             steps {
@@ -71,9 +75,9 @@ pipeline {
 
         stage('Docker Build') {
             steps {
-                echo "=== Stage 6: Building Docker Image ${APP_NAME}:${IMAGE_TAG} ==="
+                echo "=== Stage 6: Building Docker Image ${DOCKER_REGISTRY}/${APP_NAME}:${IMAGE_TAG} ==="
                 script {
-                    executeCmd("docker build -t ${APP_NAME}:${IMAGE_TAG} -t ${APP_NAME}:latest .")
+                    executeCmd("docker build -t ${DOCKER_REGISTRY}/${APP_NAME}:${IMAGE_TAG} -t ${DOCKER_REGISTRY}/${APP_NAME}:latest .")
                 }
             }
         }
@@ -84,10 +88,7 @@ pipeline {
                 script {
                     withCredentials([usernamePassword(credentialsId: DOCKER_CREDENTIALS_ID, usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                         executeCmd("docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}")
-                        executeCmd("docker tag ${APP_NAME}:${IMAGE_TAG} ${DOCKER_REGISTRY}/${APP_NAME}:${IMAGE_TAG}")
-                        executeCmd("docker tag ${APP_NAME}:latest ${DOCKER_REGISTRY}/${APP_NAME}:latest")
-                        executeCmd("docker push ${DOCKER_REGISTRY}/${APP_NAME}:${IMAGE_TAG}")
-                        executeCmd("docker push ${DOCKER_REGISTRY}/${APP_NAME}:latest")
+                        executeCmd("docker push --all-tags ${DOCKER_REGISTRY}/${APP_NAME}")
                     }
                 }
             }
