@@ -8,6 +8,7 @@ const server = app.listen(config.port, () => {
   logger.info(`🌐 Environment: ${config.nodeEnv}`);
   logger.info(`🩺 Health check: http://localhost:${config.port}/api/${config.apiVersion}/health`);
   logger.info(`=================================================`);
+  logger.info(`=================================================`);
 });
 
 // Graceful Shutdown
