@@ -244,6 +244,46 @@ const FALLBACK_PM_KISAN_RECORDS = [
     QuadFromDate: '2025-12-01T00:00:00',
     QuadEndDate: '2026-03-31T00:00:00',
   },
+  {
+    StateCode: 23,
+    DistrictCode: 392,
+    SubDistrictCode: 7033,
+    BlockCode: 3746,
+    VillageCode: 498101,
+    StateName: 'MADHYA PRADESH',
+    DistrictName: 'BALAGHAT',
+    SubDistrictName: 'Birsa',
+    BlockName: 'BIRSA',
+    VillageName: 'Dhanoli',
+    MaleCount: 310,
+    FemaleCount: 155,
+    TransGenderCount: 0,
+    FinYearID: 8,
+    QuadrimesterNo: 3,
+    InstallmentReleaseNo: 22,
+    QuadFromDate: '2025-12-01T00:00:00',
+    QuadEndDate: '2026-03-31T00:00:00',
+  },
+  {
+    StateCode: 27,
+    DistrictCode: 505,
+    SubDistrictCode: 4001,
+    BlockCode: 4010,
+    VillageCode: 554321,
+    StateName: 'MAHARASHTRA',
+    DistrictName: 'PUNE',
+    SubDistrictName: 'Haveli',
+    BlockName: 'HAVELI',
+    VillageName: 'Wagholi',
+    MaleCount: 420,
+    FemaleCount: 210,
+    TransGenderCount: 0,
+    FinYearID: 8,
+    QuadrimesterNo: 3,
+    InstallmentReleaseNo: 22,
+    QuadFromDate: '2025-12-01T00:00:00',
+    QuadEndDate: '2026-03-31T00:00:00',
+  },
 ];
 
 /**
@@ -312,6 +352,74 @@ const computeSummaryStats = (records = []) => {
 };
 
 /**
+ * Generates structured fallback data with filtering, pagination, and summary
+ */
+const getFallbackSchemesData = ({
+  limit = 50,
+  offset = 0,
+  state = '',
+  district = '',
+  subDistrict = '',
+  block = '',
+  village = '',
+  search = '',
+  reason = 'Live API unavailable',
+}) => {
+  let filtered = [...FALLBACK_PM_KISAN_RECORDS];
+
+  if (state) {
+    filtered = filtered.filter((r) => r.StateName.toLowerCase() === state.toLowerCase());
+  }
+  if (district) {
+    filtered = filtered.filter((r) => r.DistrictName.toLowerCase() === district.toLowerCase());
+  }
+  if (subDistrict) {
+    filtered = filtered.filter((r) => r.SubDistrictName.toLowerCase() === subDistrict.toLowerCase());
+  }
+  if (block) {
+    filtered = filtered.filter((r) => r.BlockName.toLowerCase() === block.toLowerCase());
+  }
+  if (village) {
+    filtered = filtered.filter((r) => r.VillageName.toLowerCase() === village.toLowerCase());
+  }
+  if (search) {
+    filtered = filtered.filter((r) => {
+      const v = (r.VillageName || '').toLowerCase();
+      const d = (r.DistrictName || '').toLowerCase();
+      const b = (r.BlockName || '').toLowerCase();
+      const s = (r.StateName || '').toLowerCase();
+      return v.includes(search) || d.includes(search) || b.includes(search) || s.includes(search);
+    });
+  }
+
+  const totalRecords = filtered.length;
+  const paginated = filtered.slice(offset, offset + limit);
+  const normalizedRecords = paginated.map(normalizeBeneficiaryRecord);
+  const summary = computeSummaryStats(paginated);
+
+  return {
+    metadata: {
+      title: 'Village and Gender - wise Beneficiaries Count under PM - KISAN Scheme',
+      description: 'Village and Gender - wise Beneficiaries Count under PM - KISAN Scheme (Local Fallback Cache)',
+      organization: ['Ministry of Agriculture and Farmers Welfare', 'Department of Agriculture and Farmers Welfare'],
+      sector: ['Agriculture'],
+      source: 'data.gov.in',
+      resourceId: config.dataGov.resourceId,
+      totalRecords,
+      returnedCount: normalizedRecords.length,
+      limit,
+      offset,
+      isCached: false,
+      isFallback: true,
+      fallbackReason: reason,
+      fetchedAt: new Date().toISOString(),
+    },
+    summary,
+    records: normalizedRecords,
+  };
+};
+
+/**
  * Generates a cache key based on query parameters
  */
 const buildCacheKey = (params) => {
@@ -360,8 +468,33 @@ const fetchGovSchemesData = async (query = {}) => {
     }
   }
 
-  // 2. Build Target URL for data.gov.in
+  // 2. Validate API key
   const { baseUrl, resourceId, apiKey } = config.dataGov;
+  const hasValidApiKey = apiKey && !apiKey.startsWith('your_') && apiKey.trim().length > 10;
+
+  // If no valid API key configured (e.g. CI / Jenkins environment), serve structured fallback data immediately
+  if (!hasValidApiKey) {
+    const fallbackResult = getFallbackSchemesData({
+      limit,
+      offset,
+      state,
+      district,
+      subDistrict,
+      block,
+      village,
+      search,
+      reason: 'No DATA_GOV_API_KEY provided. Serving local fallback cache.',
+    });
+
+    memoryCache.set(cacheKey, {
+      timestamp: Date.now(),
+      data: fallbackResult,
+    });
+
+    return fallbackResult;
+  }
+
+  // 3. Build Target URL for data.gov.in
   const targetUrl = new URL(`${baseUrl}/${resourceId}`);
   targetUrl.searchParams.set('api-key', apiKey);
   targetUrl.searchParams.set('format', 'json');
@@ -454,37 +587,24 @@ const fetchGovSchemesData = async (query = {}) => {
     }
 
     // Otherwise serve structured fallback response
-    let fallbackRecords = FALLBACK_PM_KISAN_RECORDS;
-    if (state) {
-      fallbackRecords = fallbackRecords.filter((r) => r.StateName.toLowerCase() === state.toLowerCase());
-    }
-    if (district) {
-      fallbackRecords = fallbackRecords.filter((r) => r.DistrictName.toLowerCase() === district.toLowerCase());
-    }
+    const fallbackResult = getFallbackSchemesData({
+      limit,
+      offset,
+      state,
+      district,
+      subDistrict,
+      block,
+      village,
+      search,
+      reason: error.message,
+    });
 
-    const normalizedFallback = fallbackRecords.map(normalizeBeneficiaryRecord);
-    const summary = computeSummaryStats(fallbackRecords);
+    memoryCache.set(cacheKey, {
+      timestamp: Date.now(),
+      data: fallbackResult,
+    });
 
-    return {
-      metadata: {
-        title: 'Village and Gender - wise Beneficiaries Count under PM - KISAN Scheme',
-        description: 'Village and Gender - wise Beneficiaries Count under PM - KISAN Scheme (Local Fallback Cache)',
-        organization: ['Ministry of Agriculture and Farmers Welfare', 'Department of Agriculture and Farmers Welfare'],
-        sector: ['Agriculture'],
-        source: 'data.gov.in',
-        resourceId,
-        totalRecords: fallbackRecords.length,
-        returnedCount: normalizedFallback.length,
-        limit,
-        offset,
-        isCached: false,
-        isFallback: true,
-        fallbackReason: error.message,
-        fetchedAt: new Date().toISOString(),
-      },
-      summary,
-      records: normalizedFallback,
-    };
+    return fallbackResult;
   }
 };
 
