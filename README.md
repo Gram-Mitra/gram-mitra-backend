@@ -33,7 +33,8 @@ backend/
 │   │   ├── scheme.routes.js
 │   │   └── marketplace.routes.js
 │   ├── services/
-│   │   └── health.service.js  # Business logic & external service integrations
+│   │   ├── health.service.js  # Business logic & external service integrations
+│   │   └── scheme.service.js  # data.gov.in integration, caching, normalization, catalog
 │   ├── models/
 │   │   └── index.js           # Database models placeholder
 │   ├── middleware/
@@ -43,7 +44,8 @@ backend/
 │       ├── logger.js          # Structured logger
 │       └── response.js        # Standardized API response format
 ├── tests/
-│   └── health.test.js         # Jest & Supertest integration tests
+│   ├── health.test.js         # Jest & Supertest integration tests
+│   └── schemes.test.js        # Government schemes live & catalog tests
 ├── .env.example
 ├── .env
 ├── .gitignore
@@ -69,6 +71,12 @@ NODE_ENV=development
 APP_NAME=Gram Mitra Backend
 API_VERSION=v1
 CORS_ORIGIN=*
+
+# data.gov.in Government Schemes
+DATA_GOV_API_KEY=your_data_gov_api_key_here
+DATA_GOV_BASE_URL=https://api.data.gov.in/resource
+DATA_GOV_RESOURCE_ID=388208c6-d82a-4190-90df-91aa2c326fec
+DATA_GOV_CACHE_TTL_MS=600000
 ```
 
 ### 3. Run Locally
@@ -87,6 +95,20 @@ CORS_ORIGIN=*
 
 ---
 
+## 🏛️ Government Schemes API (`/api/v1/schemes`)
+
+Integrated with the official **data.gov.in** PM-KISAN dataset API (`https://api.data.gov.in/resource/388208c6-d82a-4190-90df-91aa2c326fec`) with automatic in-memory caching and fallback resilience.
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/api/v1/schemes` | Fetch live village beneficiary records (supports `limit`, `offset`, `state`, `district`, `block`, `village`, `search`, `refresh`) |
+| `GET` | `/api/v1/schemes/catalog` | Curated directory of major rural schemes (PM-KISAN, PMAY-G, MGNREGA, PMFBY, Ayushman Bharat) with benefits & eligibility |
+| `GET` | `/api/v1/schemes/stats` | Aggregate metrics (male, female, transgender, total beneficiaries) |
+| `GET` | `/api/v1/schemes/ngos` | Directory of verified partner NGOs assisting villagers with scheme registration |
+| `GET` | `/api/v1/schemes/:id` | Detailed scheme view (e.g. `pm-kisan` includes live village snapshot) |
+
+---
+
 ## 🩺 Health Check & Core Endpoints
 
 | Method | Endpoint | Description | Response Status |
@@ -99,7 +121,7 @@ CORS_ORIGIN=*
 | `GET` | `/api/v1/healthcare` | Nearby hospitals & animal vet services | `200 OK` |
 | `GET` | `/api/v1/village-problems` | Village problems list | `200 OK` |
 | `POST` | `/api/v1/voice/query` | Farmer voice assistance query | `200 OK` |
-| `GET` | `/api/v1/schemes` | Government schemes & NGO resources | `200 OK` |
+| `GET` | `/api/v1/schemes` | Government schemes & PM-KISAN live data | `200 OK` |
 | `GET` | `/api/v1/marketplace/products` | Marketplace produce items | `200 OK` |
 
 ### Health Check Response Example
