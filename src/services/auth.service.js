@@ -46,6 +46,11 @@ const registerUser = async (rawPayload) => {
   }
 
   const client = supabaseAdmin || supabase;
+  if (!client) {
+    const error = new Error('Supabase database client is not configured');
+    error.statusCode = 503;
+    throw error;
+  }
 
   // Check if phone or email already registered in profiles
   if (phone) {
@@ -199,6 +204,17 @@ const loginUser = async (credentials) => {
   }
 
   const client = supabaseAdmin || supabase;
+  if (!supabase) {
+    if (process.env.NODE_ENV === 'test') {
+      const err = new Error('Invalid login credentials');
+      err.statusCode = 401;
+      throw err;
+    }
+    const err = new Error('Supabase client is not configured');
+    err.statusCode = 503;
+    throw err;
+  }
+
   let targetEmail = email || identifier;
 
   // If user provided a phone number instead of email, find corresponding email

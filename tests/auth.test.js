@@ -1,5 +1,8 @@
 const request = require('supertest');
 const app = require('../src/app');
+const { isSupabaseConfigured } = require('../src/config/supabase');
+
+const describeE2E = isSupabaseConfigured ? describe : describe.skip;
 
 describe('Auth Endpoints (/api/v1/auth)', () => {
   const testEmail = `test_${Date.now()}@grammitra.test`;
@@ -65,7 +68,7 @@ describe('Auth Endpoints (/api/v1/auth)', () => {
     });
   });
 
-  describe('End-to-End Registration & Login against Supabase', () => {
+  describeE2E('End-to-End Registration & Login against Supabase', () => {
     it('POST /register should successfully create user and profile in Supabase', async () => {
       const res = await request(app)
         .post('/api/v1/auth/register')
