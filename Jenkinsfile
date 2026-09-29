@@ -44,14 +44,21 @@ pipeline {
             }
         }
 
-        stage('Run Automated Tests') {
+                stage('Run Automated Tests') {
             steps {
                 echo '=== Stage 3: Running automated unit and integration tests ==='
                 script {
-                    executeCmd('npm test')
+                    withCredentials([
+                        string(credentialsId: 'supabase-url', variable: 'SUPABASE_URL'),
+                        string(credentialsId: 'supabase-anon-key', variable: 'SUPABASE_ANON_KEY'),
+                        string(credentialsId: 'supabase-service-role-key', variable: 'SUPABASE_SERVICE_ROLE_KEY')
+                    ]) {
+                        executeCmd('npm test')
+                    }
                 }
             }
         }
+
 
         stage('Code Quality (SonarQube)') {
             steps {
