@@ -105,7 +105,13 @@ pipeline {
             steps {
                 echo '=== Stage 8: Deploying Application Container ==='
                 script {
-                    executeCmd('docker compose up -d --build backend')
+                    withCredentials([
+                        string(credentialsId: 'supabase-url', variable: 'SUPABASE_URL'),
+                        string(credentialsId: 'supabase-anon-key', variable: 'SUPABASE_ANON_KEY'),
+                        string(credentialsId: 'supabase-service-role-key', variable: 'SUPABASE_SERVICE_ROLE_KEY')
+                    ]) {
+                        executeCmd('docker compose up -d --build backend')
+                    }
                 }
             }
         }
