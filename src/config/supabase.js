@@ -2,26 +2,48 @@ const { createClient } = require('@supabase/supabase-js');
 const config = require('./index');
 const logger = require('../utils/logger');
 
-const supabaseUrl = config.supabase.url;
-const supabaseAnonKey = config.supabase.anonKey;
-const supabaseServiceKey = config.supabase.serviceRoleKey;
+// Clean and sanitize inputs (strip quotes and whitespace from CI/Jenkins environment variables)
+const sanitizeEnv = (val) => {
+  if (!val) return '';
+  let str = String(val).trim();
+  if ((str.startsWith('"') && str.endsWith('"')) || (str.startsWith("'") && str.endsWith("'"))) {
+    str = str.slice(1, -1).trim();
+  }
+  return str;
+};
+
+let rawUrl = sanitizeEnv(config.supabase.url);
+// Auto-prepend https:// if domain was provided without protocol (e.g. idawmapnmtapmkxotzlw.supabase.co)
+if (rawUrl && !rawUrl.startsWith('http://') && !rawUrl.startsWith('https://')) {
+  if (rawUrl.includes('.')) {
+    rawUrl = `https://${rawUrl}`;
+  }
+}
+
+// Validate URL format
+let supabaseUrl = '';
+try {
+  if (rawUrl && rawUrl !== 'https://your-project-id.supabase.co') {
+    const parsed = new URL(rawUrl);
+    if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
+      supabaseUrl = rawUrl;
+    }
+  }
+} catch {
+  supabaseUrl = '';
+}
+
+const supabaseAnonKey = sanitizeEnv(config.supabase.anonKey);
+const supabaseServiceKey = sanitizeEnv(config.supabase.serviceRoleKey);
 
 // Prefer service role key on the backend for administrative operations, fallback to anon key
 const defaultKey = supabaseServiceKey || supabaseAnonKey;
-
-const isSupabaseConfigured = Boolean(
-  supabaseUrl &&
-  supabaseUrl !== 'https://your-project-id.supabase.co' &&
-  defaultKey &&
-  defaultKey !== 'your_supabase_anon_key' &&
-  defaultKey !== 'your_supabase_service_role_key'
-);
 
 let supabase = null;
 let supabaseAdmin = null;
 let supabaseAnon = null;
 
-if (supabaseUrl && defaultKey) {
+if (supabaseUrl && defaultKey && defaultKey !== 'your_supabase_anon_key' && defaultKey !== 'your_supabase_service_role_key') {
   try {
     supabase = createClient(supabaseUrl, defaultKey, {
       auth: {
@@ -30,7 +52,7 @@ if (supabaseUrl && defaultKey) {
       },
     });
 
-    if (supabaseServiceKey) {
+    if (supabaseServiceKey && supabaseServiceKey !== 'your_supabase_service_role_key') {
       supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
         auth: {
           persistSession: false,
@@ -39,7 +61,7 @@ if (supabaseUrl && defaultKey) {
       });
     }
 
-    if (supabaseAnonKey) {
+    if (supabaseAnonKey && supabaseAnonKey !== 'your_supabase_anon_key') {
       supabaseAnon = createClient(supabaseUrl, supabaseAnonKey, {
         auth: {
           persistSession: false,
@@ -48,9 +70,15 @@ if (supabaseUrl && defaultKey) {
       });
     }
   } catch (err) {
-    logger.error('Failed to initialize Supabase client:', err.message);
+    logger.warn('Could not initialize Supabase client:', err.message);
+    supabase = null;
+    supabaseAdmin = null;
+    supabaseAnon = null;
   }
 }
+
+// isSupabaseConfigured is ONLY true if a client was successfully constructed
+const isSupabaseConfigured = Boolean(supabase !== null);
 
 /**
  * Creates a user-scoped Supabase client using an incoming Bearer JWT
