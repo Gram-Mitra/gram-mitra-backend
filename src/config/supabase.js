@@ -2,12 +2,27 @@ const { createClient } = require('@supabase/supabase-js');
 const config = require('./index');
 const logger = require('../utils/logger');
 
-// Clean and sanitize inputs (strip quotes and whitespace from CI/Jenkins environment variables)
+// Clean and sanitize inputs (strip accidental variable names, quotes, and whitespace)
 const sanitizeEnv = (val) => {
   if (!val) return '';
   let str = String(val).trim();
-  if ((str.startsWith('"') && str.endsWith('"')) || (str.startsWith("'") && str.endsWith("'"))) {
-    str = str.slice(1, -1).trim();
+
+  // If secret was entered as "VARIABLE_NAME=value" or "VARIABLE_NAME = value"
+  if (str.includes('=')) {
+    const eqIdx = str.indexOf('=');
+    const prefix = str.substring(0, eqIdx).trim();
+    if (/^[A-Z0-9_]+$/.test(prefix)) {
+      str = str.substring(eqIdx + 1).trim();
+    }
+  }
+
+  // Strip accidental enclosing quotes (e.g. "https://..." or 'https://...')
+  while ((str.startsWith('"') && str.endsWith('"')) || (str.startsWith("'") && str.endsWith("'")) || (str.startsWith('\\"') && str.endsWith('\\"'))) {
+    if (str.startsWith('\\"') && str.endsWith('\\"')) {
+      str = str.slice(2, -2).trim();
+    } else {
+      str = str.slice(1, -1).trim();
+    }
   }
   return str;
 };
