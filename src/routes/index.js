@@ -8,6 +8,7 @@ const problemRoutes = require('./problem.routes');
 const voiceRoutes = require('./voice.routes');
 const schemeRoutes = require('./scheme.routes');
 const marketplaceRoutes = require('./marketplace.routes');
+const ngoRoutes = require('./ngo.routes');
 
 const router = express.Router();
 
@@ -21,5 +22,7 @@ router.use('/problems', problemRoutes);
 router.use('/voice', voiceRoutes);
 router.use('/schemes', schemeRoutes);
 router.use('/marketplace', marketplaceRoutes);
+router.use('/ngos', ngoRoutes);
+router.use('/ngo', ngoRoutes);
 
 module.exports = router;
