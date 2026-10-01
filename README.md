@@ -33,13 +33,18 @@ backend/
 │   │   ├── scheme.routes.js
 │   │   └── marketplace.routes.js
 │   ├── services/
-│   │   ├── health.service.js  # Business logic & external service integrations
-│   │   └── scheme.service.js  # data.gov.in integration, caching, normalization, catalog
+│   │   ├── health.service.js      # Business logic & external service integrations
+│   │   ├── healthcare.service.js  # Hospital & veterinary facilities logic
+│   │   ├── ngo.service.js         # Partner NGO directory logic
+│   │   ├── problem.service.js     # Village problem reporting logic
+│   │   ├── scheme.service.js      # data.gov.in integration, caching, normalization, catalog
+│   │   └── marketplace.service.js # Farmer marketplace, listings & order processing
 │   ├── models/
-│   │   └── index.js           # Database models placeholder
+│   │   └── index.js               # Supabase table models
 │   ├── middleware/
-│   │   ├── errorHandler.js    # Global error handler
-│   │   └── notFound.js        # 404 handler
+│   │   ├── auth.middleware.js     # JWT & Supabase auth verification
+│   │   ├── errorHandler.js        # Global error handler
+│   │   └── notFound.js            # 404 handler
 │   └── utils/
 │       ├── logger.js          # Structured logger
 │       └── response.js        # Standardized API response format
@@ -155,7 +160,35 @@ Integrated with the official **data.gov.in** PM-KISAN dataset API (`https://api.
 | `DELETE` | `/api/v1/ngos/:id` | Deactivate/remove NGO | `200 OK` |
 | `POST` | `/api/v1/voice/query` | Farmer voice assistance query | `200 OK` |
 | `GET` | `/api/v1/schemes` | Government schemes & PM-KISAN live data | `200 OK` |
-| `GET` | `/api/v1/marketplace/products` | Marketplace produce items | `200 OK` |
+
+---
+
+## 🌾 Farmer Marketplace API (`/api/v1/marketplace`)
+
+Farmer-to-consumer & farmer-to-business produce trading, listing management, and end-to-end order processing.
+
+| Method | Endpoint | Description | Response Status |
+|---|---|---|---|
+| **Products** | | | |
+| `GET` | `/api/v1/marketplace/products` | Browse produce items (filters: `category`, `search`, `minPrice`, `maxPrice`, `district`, `state`, `village`, `is_available`, `limit`, `offset`) | `200 OK` |
+| `GET` | `/api/v1/marketplace/categories` | Distinct product categories with listing counts and price ranges | `200 OK` |
+| `GET` | `/api/v1/marketplace/stats` | Marketplace summary metrics (total products, active listings, categories, avg price) | `200 OK` |
+| `GET` | `/api/v1/marketplace/products/:id` | View detailed product listing profile with seller info | `200 OK` |
+| **Create Listing** | | | |
+| `POST` | `/api/v1/marketplace/products` | Publish a new produce listing (validates `name`, `price`, `quantity`, `unit`, `category`) | `201 Created` |
+| `POST` | `/api/v1/marketplace/listings` | Alias endpoint to create a listing | `201 Created` |
+| **Update Listing** | | | |
+| `PUT` | `/api/v1/marketplace/products/:id` | Update price, quantity, availability, description, or location | `200 OK` |
+| `PUT` | `/api/v1/marketplace/listings/:id` | Alias endpoint to update a listing | `200 OK` |
+| `DELETE` | `/api/v1/marketplace/products/:id` | Remove/deactivate a product listing | `200 OK` |
+| `GET` | `/api/v1/marketplace/my-listings` | Retrieve listings published by the authenticated seller | `200 OK` |
+| **Orders** | | | |
+| `POST` | `/api/v1/marketplace/orders` | Place an order (validates stock, decrements quantity, calculates total price) | `201 Created` |
+| `GET` | `/api/v1/marketplace/orders` | List orders (filters: `buyer_id`, `seller_id`, `product_id`, `status`) | `200 OK` |
+| `GET` | `/api/v1/marketplace/orders/stats` | Aggregated order metrics, revenue and status distribution | `200 OK` |
+| `GET` | `/api/v1/marketplace/orders/:id` | Retrieve single order details with embedded product summary | `200 OK` |
+| `PATCH`| `/api/v1/marketplace/orders/:id/status` | Advance order status (`pending` -> `confirmed` -> `shipped` -> `delivered` / `cancelled`) | `200 OK` |
+| `DELETE`| `/api/v1/marketplace/orders/:id` | Cancel order and automatically restore product stock | `200 OK` |
 
 ### Health Check Response Example
 ```json

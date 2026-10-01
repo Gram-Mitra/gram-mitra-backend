@@ -127,6 +127,7 @@ const TABLES = {
   VILLAGE_PROBLEMS: 'village_problems',
   PROBLEM_UPDATES: 'problem_updates',
   PRODUCTS: 'products',
+  ORDERS: 'orders',
   NGOS: 'ngos',
   MYTHS: 'myths',
 };

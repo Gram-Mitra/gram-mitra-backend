@@ -152,6 +152,31 @@ CREATE TABLE IF NOT EXISTS myths (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- ------------------------------------------------------------------------------
+-- 9. ORDERS (Marketplace Transactions)
+-- ------------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS orders (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  product_id UUID REFERENCES products(id) ON DELETE SET NULL,
+  buyer_id UUID REFERENCES profiles(id) ON DELETE SET NULL,
+  seller_id UUID REFERENCES profiles(id) ON DELETE SET NULL,
+  buyer_name TEXT NOT NULL,
+  buyer_phone TEXT NOT NULL,
+  quantity DECIMAL NOT NULL,
+  unit_price DECIMAL NOT NULL,
+  total_price DECIMAL NOT NULL,
+  status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled')),
+  delivery_address TEXT NOT NULL,
+  delivery_village TEXT,
+  delivery_district TEXT,
+  delivery_state TEXT,
+  payment_method TEXT DEFAULT 'cod' CHECK (payment_method IN ('cod', 'cash_on_delivery', 'upi', 'bank_transfer', 'online')),
+  payment_status TEXT DEFAULT 'unpaid' CHECK (payment_status IN ('unpaid', 'paid', 'refunded')),
+  notes TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- ==============================================================================
 -- INDEXES for Optimized Query Performance
 -- ==============================================================================
@@ -166,6 +191,10 @@ CREATE INDEX IF NOT EXISTS idx_problem_updates_problem_id ON problem_updates(pro
 CREATE INDEX IF NOT EXISTS idx_products_seller_id ON products(seller_id);
 CREATE INDEX IF NOT EXISTS idx_products_category ON products(category);
 CREATE INDEX IF NOT EXISTS idx_products_district ON products(district);
+CREATE INDEX IF NOT EXISTS idx_orders_buyer_id ON orders(buyer_id);
+CREATE INDEX IF NOT EXISTS idx_orders_seller_id ON orders(seller_id);
+CREATE INDEX IF NOT EXISTS idx_orders_product_id ON orders(product_id);
+CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
 CREATE INDEX IF NOT EXISTS idx_ngos_district_category ON ngos(district, category);
 CREATE INDEX IF NOT EXISTS idx_myths_category_language ON myths(category, language);
 
@@ -194,6 +223,10 @@ EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 DO $$ BEGIN
   CREATE TRIGGER trg_products_updated_at BEFORE UPDATE ON products FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+DO $$ BEGIN
+  CREATE TRIGGER trg_orders_updated_at BEFORE UPDATE ON orders FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 DO $$ BEGIN

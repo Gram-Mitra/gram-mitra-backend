@@ -53,10 +53,10 @@ async function testSupabaseConnection() {
 
     if (missingTables.length === 0) {
       console.log('🎉 SUCCESS: Backend is PERFECTLY linked to Supabase!');
-      console.log('All 8 database tables are present and accessible.');
+      console.log(`All ${tableKeys.length} database tables are present and accessible.`);
     } else if (missingTables.length === tableKeys.length) {
       console.log('✅ Connection to Supabase is SUCCESSFUL!');
-      console.log('⚠️  However, the 8 tables are not yet created in your Supabase database.');
+      console.log(`⚠️  However, the ${tableKeys.length} tables are not yet created in your Supabase database.`);
       console.log('👉 To create them:');
       console.log('   1. Open your Supabase Dashboard: https://supabase.com/dashboard/project/idawmapnmtapmkxotzlw');
       console.log('   2. Go to the "SQL Editor" tab on the left');
