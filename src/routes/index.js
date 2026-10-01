@@ -17,6 +17,7 @@ router.use('/auth', authRoutes);
 router.use('/superstitions', superstitionRoutes);
 router.use('/healthcare', healthcareRoutes);
 router.use('/village-problems', problemRoutes);
+router.use('/problems', problemRoutes);
 router.use('/voice', voiceRoutes);
 router.use('/schemes', schemeRoutes);
 router.use('/marketplace', marketplaceRoutes);
