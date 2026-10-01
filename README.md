@@ -137,7 +137,15 @@ Integrated with the official **data.gov.in** PM-KISAN dataset API (`https://api.
 | `GET` | `/api/v1/healthcare/services/:id` | Service details with linked facility | `200 OK` |
 | `PUT` | `/api/v1/healthcare/services/:id` | Update service or toggle availability | `200 OK` |
 | `DELETE` | `/api/v1/healthcare/services/:id` | Delete service | `200 OK` |
-| `GET` | `/api/v1/village-problems` | Village problems list | `200 OK` |
+| `POST` | `/api/v1/village-problems` | Create problem (title, description, category, priority, coordinates) | `201 Created` |
+| `GET` | `/api/v1/village-problems` | View problems (filters: `category`, `status`, `priority`, `district`, `village`, `lat`, `lng`, `radius`, `search`) | `200 OK` |
+| `GET` | `/api/v1/village-problems/:id` | View single problem profile with reporter & timeline | `200 OK` |
+| `GET` | `/api/v1/village-problems/stats` | Problem statistics & analytics (counts by status/category, resolution rate) | `200 OK` |
+| `GET` | `/api/v1/village-problems/metadata` | Metadata values (valid categories, statuses, priorities) | `200 OK` |
+| `PATCH` | `/api/v1/village-problems/:id/status` | Update status (`reported` -> `under_review` -> `in_progress` -> `resolved` -> `rejected`) with notes | `200 OK` |
+| `PUT` | `/api/v1/village-problems/:id` | Edit problem description, category, or priority | `200 OK` |
+| `GET` | `/api/v1/village-problems/:id/history` | Problem history: chronological audit trail of all status updates | `200 OK` |
+| `DELETE` | `/api/v1/village-problems/:id` | Remove problem and associated update history | `200 OK` |
 | `POST` | `/api/v1/voice/query` | Farmer voice assistance query | `200 OK` |
 | `GET` | `/api/v1/schemes` | Government schemes & PM-KISAN live data | `200 OK` |
 | `GET` | `/api/v1/marketplace/products` | Marketplace produce items | `200 OK` |
