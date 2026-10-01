@@ -118,7 +118,25 @@ Integrated with the official **data.gov.in** PM-KISAN dataset API (`https://api.
 | `POST` | `/api/v1/auth/register` | User registration | `200 OK` |
 | `POST` | `/api/v1/auth/login` | User login | `200 OK` |
 | `GET` | `/api/v1/superstitions` | Myth vs Fact listings | `200 OK` |
-| `GET` | `/api/v1/healthcare` | Nearby hospitals & animal vet services | `200 OK` |
+| `GET` | `/api/v1/healthcare` | Facilities list (filters: `type=human\|animal`, `district`, `search`, `service`, `lat`, `lng`, `radius`) | `200 OK` |
+| `GET` | `/api/v1/healthcare/nearby` | GPS coordinates nearby search (`lat`, `lng`, `radius`) | `200 OK` |
+| `GET` | `/api/v1/healthcare/emergency` | 24/7 emergency facilities & helplines (108, 102, 104, 1962, 112) | `200 OK` |
+| `GET` | `/api/v1/healthcare/hospitals` | Human hospitals, PHCs, CHCs, & civil hospitals | `200 OK` |
+| `POST` | `/api/v1/healthcare/hospitals` | Register a new human healthcare facility with services | `201 Created` |
+| `GET` | `/api/v1/healthcare/hospitals/:id` | Human hospital details with clinical services | `200 OK` |
+| `PUT` | `/api/v1/healthcare/hospitals/:id` | Update human hospital details | `200 OK` |
+| `DELETE` | `/api/v1/healthcare/hospitals/:id` | Deactivate/remove human hospital | `200 OK` |
+| `GET` | `/api/v1/healthcare/veterinary` | Animal hospitals, polyclinics, & dispensaries | `200 OK` |
+| `POST` | `/api/v1/healthcare/veterinary` | Register a veterinary clinic with services | `201 Created` |
+| `GET` | `/api/v1/healthcare/veterinary/:id` | Veterinary facility details with services | `200 OK` |
+| `PUT` | `/api/v1/healthcare/veterinary/:id` | Update veterinary clinic details | `200 OK` |
+| `DELETE` | `/api/v1/healthcare/veterinary/:id` | Deactivate/remove veterinary clinic | `200 OK` |
+| `GET` | `/api/v1/healthcare/services` | Query all healthcare & veterinary clinical services | `200 OK` |
+| `GET` | `/api/v1/healthcare/services/catalog`| Curated government rural health & veterinary programs | `200 OK` |
+| `POST` | `/api/v1/healthcare/services` | Add a clinical or veterinary service | `201 Created` |
+| `GET` | `/api/v1/healthcare/services/:id` | Service details with linked facility | `200 OK` |
+| `PUT` | `/api/v1/healthcare/services/:id` | Update service or toggle availability | `200 OK` |
+| `DELETE` | `/api/v1/healthcare/services/:id` | Delete service | `200 OK` |
 | `GET` | `/api/v1/village-problems` | Village problems list | `200 OK` |
 | `POST` | `/api/v1/voice/query` | Farmer voice assistance query | `200 OK` |
 | `GET` | `/api/v1/schemes` | Government schemes & PM-KISAN live data | `200 OK` |
