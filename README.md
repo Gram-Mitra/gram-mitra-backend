@@ -146,6 +146,13 @@ Integrated with the official **data.gov.in** PM-KISAN dataset API (`https://api.
 | `PUT` | `/api/v1/village-problems/:id` | Edit problem description, category, or priority | `200 OK` |
 | `GET` | `/api/v1/village-problems/:id/history` | Problem history: chronological audit trail of all status updates | `200 OK` |
 | `DELETE` | `/api/v1/village-problems/:id` | Remove problem and associated update history | `200 OK` |
+| `GET` | `/api/v1/ngos` | Directory of partner NGOs (filters: `category`, `district`, `state`, `village`, `service`, `lat`, `lng`, `radius`, `search`) | `200 OK` |
+| `GET` | `/api/v1/ngos/categories` | List NGO focus categories with counts | `200 OK` |
+| `GET` | `/api/v1/ngos/stats` | NGO summary metrics (total NGOs, districts covered, active count) | `200 OK` |
+| `GET` | `/api/v1/ngos/:id` | View detailed NGO profile (contacts, services, location) | `200 OK` |
+| `POST` | `/api/v1/ngos` | Register a new partner NGO | `201 Created` |
+| `PUT` | `/api/v1/ngos/:id` | Update NGO profile information | `200 OK` |
+| `DELETE` | `/api/v1/ngos/:id` | Deactivate/remove NGO | `200 OK` |
 | `POST` | `/api/v1/voice/query` | Farmer voice assistance query | `200 OK` |
 | `GET` | `/api/v1/schemes` | Government schemes & PM-KISAN live data | `200 OK` |
 | `GET` | `/api/v1/marketplace/products` | Marketplace produce items | `200 OK` |
