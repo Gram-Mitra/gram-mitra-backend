@@ -22,13 +22,14 @@ module.exports = {
   supabase,
   supabaseAdmin,
 
-  // 8 Core Tables
+  // Core Tables
   Profile: createModelHelper(TABLES.PROFILES),
   Hospital: createModelHelper(TABLES.HOSPITALS),
   HospitalService: createModelHelper(TABLES.HOSPITAL_SERVICES),
   VillageProblem: createModelHelper(TABLES.VILLAGE_PROBLEMS),
   ProblemUpdate: createModelHelper(TABLES.PROBLEM_UPDATES),
   Product: createModelHelper(TABLES.PRODUCTS),
+  Order: createModelHelper(TABLES.ORDERS),
   Ngo: createModelHelper(TABLES.NGOS),
   Myth: createModelHelper(TABLES.MYTHS),
 
