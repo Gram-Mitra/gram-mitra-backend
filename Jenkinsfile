@@ -13,6 +13,8 @@ pipeline {
         IMAGE_NAME = 'gram-mitra-backend:latest'
         DEPLOYMENT_NAME = 'gram-mitra-backend'
         SERVICE_NAME = 'gram-mitra-backend-service'
+        MINIKUBE_HOME = 'C:\\Users\\kirve'
+        KUBECONFIG = 'C:\\Users\\kirve\\.kube\\config'
     }
 
     stages {
