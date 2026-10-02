@@ -6,8 +6,12 @@ dist/
 
 # Environment files
 .env
+.env.*
 .env.local
 .env.production
+
+# Kubernetes Secrets
+k8s/secret.yaml
 
 # Logs
 logs/

@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gram-mitra-backend
+  labels:
+    app: gram-mitra-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: gram-mitra-backend
+  template:
+    metadata:
+      labels:
+        app: gram-mitra-backend
+    spec:
+      containers:
+        - name: backend
+          image: gram-mitra-backend:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5000
+              name: http
+          envFrom:
+            - configMapRef:
+                name: gram-mitra-config
+            - secretRef:
+                name: gram-mitra-secrets
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          readinessProbe:
+            httpGet:
+              path: /api/v1/health
+              port: 5000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 5000
+            initialDelaySeconds: 10
+            periodSeconds: 15
+            timeoutSeconds: 3
+            failureThreshold: 3
