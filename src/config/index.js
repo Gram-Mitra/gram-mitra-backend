@@ -24,6 +24,11 @@ const config = {
     resourceId: process.env.DATA_GOV_RESOURCE_ID || '388208c6-d82a-4190-90df-91aa2c326fec',
     cacheTtlMs: parseInt(process.env.DATA_GOV_CACHE_TTL_MS, 10) || 10 * 60 * 1000, // 10 minutes default
   },
+  vapi: {
+    publicKey: process.env.VAPI_PUBLIC_KEY || '',
+    assistantId: process.env.VAPI_ASSISTANT_ID || '',
+    serverSecret: process.env.VAPI_SERVER_SECRET || '',
+  },
 };
 
 module.exports = config;
