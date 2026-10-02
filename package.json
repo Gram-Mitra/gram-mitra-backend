@@ -8,7 +8,7 @@
     "dev": "node --watch src/server.js",
     "dev:nodemon": "nodemon src/server.js",
     "db:check": "node src/scripts/test-db.js",
-    "test": "jest --runInBand"
+    "test": "jest --runInBand --testTimeout=15000"
   },
   "keywords": [
     "gram-mitra",

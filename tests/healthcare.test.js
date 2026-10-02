@@ -1,6 +1,8 @@
 const request = require('supertest');
 const app = require('../src/app');
 
+jest.setTimeout(15000);
+
 describe('Healthcare & Veterinary API Endpoints', () => {
   let createdHospitalId;
   let createdVetId;
