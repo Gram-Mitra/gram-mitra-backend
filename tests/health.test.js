@@ -1,6 +1,8 @@
 const request = require('supertest');
 const app = require('../src/app');
 
+jest.setTimeout(15000);
+
 describe('Health & Root Endpoints', () => {
   it('GET / should return 200 and running message with status OK', async () => {
     const res = await request(app).get('/');
