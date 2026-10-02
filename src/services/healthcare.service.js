@@ -34,6 +34,13 @@ const calculateDistanceKm = (lat1, lon1, lat2, lon2) => {
   return Math.round(EARTH_RADIUS_KM * c * 10) / 10; // 1 decimal precision
 };
 
+// Strips nested services from facility object to prevent circular JSON references
+const sanitizeFacilityForService = (fac) => {
+  if (!fac) return null;
+  const { services, ...facilityData } = fac;
+  return facilityData;
+};
+
 /**
  * Curated emergency helplines for rural communities
  */
@@ -1029,23 +1036,12 @@ class HealthcareService {
     // Fallback extraction
     let allFallbackServices = [];
     FALLBACK_FACILITIES.forEach((fac) => {
-      fac.services.forEach((srv) => {
+      const sanitizedHosp = sanitizeFacilityForService(fac);
+      (fac.services || []).forEach((srv) => {
+        const { hospital: _, ...serviceData } = srv;
         allFallbackServices.push({
-          ...srv,
-          hospital: {
-            id: fac.id,
-            name: fac.name,
-            type: fac.type,
-            phone: fac.phone,
-            address: fac.address,
-            village: fac.village,
-            district: fac.district,
-            state: fac.state,
-            latitude: fac.latitude,
-            longitude: fac.longitude,
-            is_emergency: fac.is_emergency,
-            is_active: fac.is_active,
-          },
+          ...serviceData,
+          hospital: sanitizedHosp,
         });
       });
     });
@@ -1109,11 +1105,12 @@ class HealthcareService {
 
     // Search fallback
     for (const fac of FALLBACK_FACILITIES) {
-      const found = fac.services.find((s) => s.id === id);
+      const found = (fac.services || []).find((s) => s.id === id);
       if (found) {
+        const { hospital: _, ...serviceData } = found;
         return {
-          ...found,
-          hospital: fac,
+          ...serviceData,
+          hospital: sanitizeFacilityForService(fac),
         };
       }
     }
@@ -1149,22 +1146,21 @@ class HealthcareService {
         error.statusCode = 404;
         throw error;
       }
-      const newService = {
-        id: require('crypto').randomUUID(),
+      const srvId = require('crypto').randomUUID();
+      const srvRecord = {
+        id: srvId,
         hospital_id,
         service_name: service_name.trim(),
         description: description ? description.trim() : null,
         available: available !== undefined ? Boolean(available) : true,
         created_at: new Date().toISOString(),
-        hospital: {
-          id: hospital.id,
-          name: hospital.name,
-          type: hospital.type,
-        },
       };
       if (!hospital.services) hospital.services = [];
-      hospital.services.push(newService);
-      return newService;
+      hospital.services.push(srvRecord);
+      return {
+        ...srvRecord,
+        hospital: sanitizeFacilityForService(hospital),
+      };
     }
 
     // Verify hospital exists
@@ -1231,8 +1227,12 @@ class HealthcareService {
           if (data.available !== undefined) {
             srv.available = Boolean(data.available);
           }
-          srv.hospital = fac;
-          return srv;
+          delete srv.hospital;
+          const { hospital: _, ...serviceData } = srv;
+          return {
+            ...serviceData,
+            hospital: sanitizeFacilityForService(fac),
+          };
         }
       }
       const error = new Error(`Service with ID '${id}' not found`);
