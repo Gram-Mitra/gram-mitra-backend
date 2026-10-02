@@ -673,12 +673,34 @@ class HealthcareService {
     if (!client) {
       // In-memory mock creation
       const mockId = require('crypto').randomUUID();
+      let createdServices = [];
+      if (Array.isArray(services) && services.length > 0) {
+        createdServices = services.map((srv) => {
+          const srvId = require('crypto').randomUUID();
+          if (typeof srv === 'string') {
+            return {
+              id: srvId,
+              hospital_id: mockId,
+              service_name: srv.trim(),
+              description: null,
+              available: true,
+            };
+          }
+          return {
+            id: srv.id || srvId,
+            hospital_id: mockId,
+            service_name: srv.service_name || srv.name || 'General Service',
+            description: srv.description || null,
+            available: srv.available !== undefined ? Boolean(srv.available) : true,
+          };
+        });
+      }
       const newFacility = {
         id: mockId,
         ...facilityPayload,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
-        services: [],
+        services: createdServices,
       };
       FALLBACK_FACILITIES.push(newFacility);
       return newFacility;
@@ -745,9 +767,16 @@ class HealthcareService {
 
     const client = this.getClient();
     if (!client) {
-      const error = new Error('Database client is not available');
-      error.statusCode = 503;
-      throw error;
+      const facility = FALLBACK_FACILITIES.find(
+        (f) => f.id === id && (!expectedType || expectedType === 'all' || f.type === expectedType)
+      );
+      if (!facility) {
+        const error = new Error(`Facility with ID '${id}' not found`);
+        error.statusCode = 404;
+        throw error;
+      }
+      Object.assign(facility, data, { updated_at: new Date().toISOString() });
+      return facility;
     }
 
     // Verify existing record
@@ -813,9 +842,16 @@ class HealthcareService {
 
     const client = this.getClient();
     if (!client) {
-      const error = new Error('Database client is not available');
-      error.statusCode = 503;
-      throw error;
+      const idx = FALLBACK_FACILITIES.findIndex(
+        (f) => f.id === id && (!expectedType || expectedType === 'all' || f.type === expectedType)
+      );
+      if (idx === -1) {
+        const error = new Error(`Facility with ID '${id}' not found`);
+        error.statusCode = 404;
+        throw error;
+      }
+      const [deleted] = FALLBACK_FACILITIES.splice(idx, 1);
+      return { id: deleted.id, deleted: true };
     }
 
     // Verify existing
@@ -1107,9 +1143,28 @@ class HealthcareService {
 
     const client = this.getClient();
     if (!client) {
-      const error = new Error('Database client is not available');
-      error.statusCode = 503;
-      throw error;
+      const hospital = FALLBACK_FACILITIES.find((f) => f.id === hospital_id);
+      if (!hospital) {
+        const error = new Error(`Associated facility with ID '${hospital_id}' does not exist`);
+        error.statusCode = 404;
+        throw error;
+      }
+      const newService = {
+        id: require('crypto').randomUUID(),
+        hospital_id,
+        service_name: service_name.trim(),
+        description: description ? description.trim() : null,
+        available: available !== undefined ? Boolean(available) : true,
+        created_at: new Date().toISOString(),
+        hospital: {
+          id: hospital.id,
+          name: hospital.name,
+          type: hospital.type,
+        },
+      };
+      if (!hospital.services) hospital.services = [];
+      hospital.services.push(newService);
+      return newService;
     }
 
     // Verify hospital exists
@@ -1159,8 +1214,29 @@ class HealthcareService {
 
     const client = this.getClient();
     if (!client) {
-      const error = new Error('Database client is not available');
-      error.statusCode = 503;
+      for (const fac of FALLBACK_FACILITIES) {
+        const srv = (fac.services || []).find((s) => s.id === id);
+        if (srv) {
+          if (data.service_name !== undefined) {
+            if (!data.service_name.trim()) {
+              const error = new Error('Service name cannot be empty');
+              error.statusCode = 400;
+              throw error;
+            }
+            srv.service_name = data.service_name.trim();
+          }
+          if (data.description !== undefined) {
+            srv.description = data.description ? data.description.trim() : null;
+          }
+          if (data.available !== undefined) {
+            srv.available = Boolean(data.available);
+          }
+          srv.hospital = fac;
+          return srv;
+        }
+      }
+      const error = new Error(`Service with ID '${id}' not found`);
+      error.statusCode = 404;
       throw error;
     }
 
@@ -1221,8 +1297,15 @@ class HealthcareService {
 
     const client = this.getClient();
     if (!client) {
-      const error = new Error('Database client is not available');
-      error.statusCode = 503;
+      for (const fac of FALLBACK_FACILITIES) {
+        const idx = (fac.services || []).findIndex((s) => s.id === id);
+        if (idx !== -1) {
+          fac.services.splice(idx, 1);
+          return { id, deleted: true };
+        }
+      }
+      const error = new Error(`Service with ID '${id}' not found`);
+      error.statusCode = 404;
       throw error;
     }
 
