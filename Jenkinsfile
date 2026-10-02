@@ -1,36 +1,24 @@
-def executeCmd(String cmd) {
-    if (isUnix()) {
-        sh cmd
-    } else {
-        bat cmd
-    }
-}
-
 pipeline {
     agent any
-
-    environment {
-        APP_NAME = 'gram-mitra-backend'
-        IMAGE_TAG = "${env.BUILD_NUMBER ?: 'dev'}"
-        DOCKER_REGISTRY = 'ak3806'
-        DOCKER_CREDENTIALS_ID = 'docker-registry-credentials'
-    }
 
     options {
         buildDiscarder(logRotator(numToKeepStr: '10'))
         disableConcurrentBuilds()
-        timeout(time: 30, unit: 'MINUTES')
+        timeout(time: 20, unit: 'MINUTES')
         timestamps()
     }
 
-    triggers {
-        pollSCM('* * * * *')
+    environment {
+        APP_NAME = 'gram-mitra-backend'
+        IMAGE_NAME = 'gram-mitra-backend:latest'
+        DEPLOYMENT_NAME = 'gram-mitra-backend'
+        SERVICE_NAME = 'gram-mitra-backend-service'
     }
 
     stages {
-        stage('Checkout Code') {
+        stage('Checkout') {
             steps {
-                echo '=== Stage 1: Checking out code from repository ==='
+                echo '=== Stage 1: Checking out code from GitHub ==='
                 checkout scm
             }
         }
@@ -38,95 +26,66 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 echo '=== Stage 2: Installing npm dependencies ==='
-                script {
-                    executeCmd('npm ci')
-                }
+                bat 'npm ci'
             }
         }
 
-                stage('Run Automated Tests') {
+        stage('Test') {
             steps {
-                echo '=== Stage 3: Running automated unit and integration tests ==='
-                script {
-                    withCredentials([
-                        string(credentialsId: 'supabase-url', variable: 'SUPABASE_URL'),
-                        string(credentialsId: 'supabase-anon-key', variable: 'SUPABASE_ANON_KEY'),
-                        string(credentialsId: 'supabase-service-role-key', variable: 'SUPABASE_SERVICE_ROLE_KEY')
-                    ]) {
-                        executeCmd('npm test')
-                    }
-                }
-            }
-        }
-
-
-        stage('Code Quality (SonarQube)') {
-            steps {
-                echo '=== Stage 4: Code Quality Scan ==='
-                script {
-                    echo 'SonarQube analysis stage ready. (Uncomment sonar-scanner step once SonarQube server is configured).'
-                    // executeCmd('sonar-scanner -Dsonar.projectName=gram-mitra-backend -Dsonar.projectKey=gram-mitra-backend')
-                }
-            }
-        }
-
-        stage('Security Vulnerability Scan (Trivy)') {
-            steps {
-                echo '=== Stage 5: Security Vulnerability Scan ==='
-                script {
-                    echo 'Trivy security scan stage ready. (Uncomment below once Trivy CLI is installed on runner).'
-                    // executeCmd('trivy fs --severity HIGH,CRITICAL .')
-                }
+                echo '=== Stage 3: Running Automated Tests ==='
+                bat 'npm test'
             }
         }
 
         stage('Docker Build') {
             steps {
-                echo "=== Stage 6: Building Docker Image ${DOCKER_REGISTRY}/${APP_NAME}:${IMAGE_TAG} ==="
-                script {
-                    executeCmd("docker build -t ${DOCKER_REGISTRY}/${APP_NAME}:${IMAGE_TAG} -t ${DOCKER_REGISTRY}/${APP_NAME}:latest .")
-                }
+                echo "=== Stage 4: Building Docker Image ${IMAGE_NAME} ==="
+                bat 'docker build -t gram-mitra-backend:latest .'
             }
         }
 
-        stage('Docker Push') {
+        stage('Load Image into Minikube') {
             steps {
-                echo '=== Stage 7: Pushing Docker Image to Registry ==='
-                script {
-                    withCredentials([usernamePassword(credentialsId: DOCKER_CREDENTIALS_ID, usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                        executeCmd("docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}")
-                        executeCmd("docker push --all-tags ${DOCKER_REGISTRY}/${APP_NAME}")
-                    }
-                }
+                echo "=== Stage 5: Loading Docker Image into Minikube ==="
+                bat 'minikube image load gram-mitra-backend:latest'
             }
         }
 
-        stage('Deploy Application') {
+        stage('Deploy to Kubernetes') {
             steps {
-                echo '=== Stage 8: Deploying Application Container ==='
-                script {
-                    withCredentials([
-                        string(credentialsId: 'supabase-url', variable: 'SUPABASE_URL'),
-                        string(credentialsId: 'supabase-anon-key', variable: 'SUPABASE_ANON_KEY'),
-                        string(credentialsId: 'supabase-service-role-key', variable: 'SUPABASE_SERVICE_ROLE_KEY')
-                    ]) {
-                        executeCmd('docker compose up -d --build backend')
-                    }
-                }
+                echo '=== Stage 6: Applying Kubernetes Manifests ==='
+                bat 'kubectl apply -f k8s/configmap.yaml'
+                bat 'kubectl apply -f k8s/deployment.yaml'
+                bat 'kubectl apply -f k8s/service.yaml'
+            }
+        }
+
+        stage('Restart Deployment') {
+            steps {
+                echo "=== Stage 7: Rolling Restart of Deployment ${DEPLOYMENT_NAME} ==="
+                bat 'kubectl rollout restart deployment/gram-mitra-backend'
+            }
+        }
+
+        stage('Verify Deployment') {
+            steps {
+                echo "=== Stage 8: Verifying Deployment Rollout & Health ==="
+                bat 'kubectl rollout status deployment/gram-mitra-backend --timeout=120s'
+                bat 'kubectl get pods -l app=gram-mitra-backend'
+                bat 'kubectl get services gram-mitra-backend-service'
             }
         }
     }
 
     post {
         always {
-            echo '=== CI/CD Pipeline Execution Finished ==='
-            cleanWs()
+            echo '=== Pipeline Execution Finished ==='
         }
         success {
-            echo "✅ Pipeline succeeded! Build #${env.BUILD_NUMBER} completed successfully."
+            echo '✅ Deployment SUCCESS: Both backend replicas are running the new Docker image on Minikube!'
         }
         failure {
-            echo "❌ Pipeline failed! Please inspect logs for Build #${env.BUILD_NUMBER}."
+            echo '❌ Deployment FAILED: Please inspect the logs above.'
         }
     }
 }
