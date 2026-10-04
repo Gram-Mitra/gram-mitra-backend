@@ -1,644 +1,651 @@
-# 🌾 Gram Mitra (Rural Connect) — Backend API Service
+# 🌾 Gram Mitra (Rural Connect) — Cloud, DevOps & API Infrastructure
 
+[![AWS EC2](https://img.shields.io/badge/Cloud-AWS%20EC2-FF9900?logo=amazonec2&logoColor=white)](https://aws.amazon.com/ec2/)
+[![Kubernetes](https://img.shields.io/badge/Kubernetes-kubeadm%20%7C%20Flannel-326CE5?logo=kubernetes&logoColor=white)](https://kubernetes.io/)
+[![Docker Hub](https://img.shields.io/badge/Docker%20Hub-ak3806%2Fgram--mitra--backend-2496ED?logo=docker&logoColor=white)](https://hub.docker.com/r/ak3806/gram-mitra-backend)
+[![Jenkins CI/CD](https://img.shields.io/badge/CI%2FCD-Jenkins%20Pipeline-D24939?logo=jenkins&logoColor=white)](https://www.jenkins.io/)
+[![SonarQube](https://img.shields.io/badge/Code%20Quality-SonarQube-4E9BCD?logo=sonarqube&logoColor=white)](https://www.sonarqube.org/)
+[![Prometheus](https://img.shields.io/badge/Monitoring-Prometheus-E6522C?logo=prometheus&logoColor=white)](https://prometheus.io/)
+[![Grafana](https://img.shields.io/badge/Dashboard-Grafana-F46800?logo=grafana&logoColor=white)](https://grafana.com/)
+[![Helm](https://img.shields.io/badge/Packaging-Helm-0F1689?logo=helm&logoColor=white)](https://helm.sh/)
+[![Supabase](https://img.shields.io/badge/Database-Supabase%20PostgreSQL-3ECF8E?logo=supabase&logoColor=white)](https://supabase.com/)
 [![Node.js](https://img.shields.io/badge/Node.js-v18%2B-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
 [![Express](https://img.shields.io/badge/Express-4.21.2-000000?logo=express&logoColor=white)](https://expressjs.com/)
-[![Supabase](https://img.shields.io/badge/Database-Supabase%20PostgreSQL-3ECF8E?logo=supabase&logoColor=white)](https://supabase.com/)
-[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
-[![Kubernetes](https://img.shields.io/badge/Kubernetes-K8s-326CE5?logo=kubernetes&logoColor=white)](https://kubernetes.io/)
-[![Jenkins](https://img.shields.io/badge/CI%2FCD-Jenkins%20Pipeline-D24939?logo=jenkins&logoColor=white)](https://www.jenkins.io/)
-[![Jest](https://img.shields.io/badge/Tested%20With-Jest%20%26%20Supertest-C21325?logo=jest&logoColor=white)](https://jestjs.io/)
+[![Jest](https://img.shields.io/badge/Testing-Jest%20%26%20Supertest-C21325?logo=jest&logoColor=white)](https://jestjs.io/)
 
-A production-ready, modular RESTful backend powering **Gram Mitra (Rural Connect)** — a comprehensive digital empowerment platform designed for rural citizens, farmers, and village communities. Built with **Node.js, Express, JavaScript, and Supabase PostgreSQL**, following a clean, layered architecture with robust error handling, security policies, and DevOps pipelines.
+> **Gram Mitra (Rural Connect)** is an end-to-end rural empowerment and agricultural support platform connecting farmers and village communities with healthcare, veterinary services, government welfare schemes, grievance redressal, produce marketplaces, and AI-powered bilingual voice mentors.
+
+This repository contains the **complete application codebase**, **REST API services**, **database schemas**, and the **production-grade DevOps, Cloud, Kubernetes, CI/CD, SonarQube Code Quality, and Observability infrastructure** powering the Gram-Mitra platform.
 
 ---
 
 ## 📑 Table of Contents
 
-- [Vision & Core Modules](#-vision--core-modules)
-- [Architecture & Folder Structure](#-architecture--folder-structure)
-- [Tech Stack](#-tech-stack)
-- [Database Architecture & Schema](#-database-architecture--schema)
-- [Environment Configuration](#-environment-configuration)
-- [Quick Start & Local Setup](#-quick-start--local-setup)
-- [API Reference Guide](#-api-reference-guide)
-  - [1. System & Health Check](#1-system--health-check)
-  - [2. Authentication & User Profile](#2-authentication--user-profile)
-  - [3. Healthcare & Veterinary Directory](#3-healthcare--veterinary-directory)
-  - [4. Village Problem Redressal](#4-village-problem-redressal)
-  - [5. Government Schemes & Beneficiaries](#5-government-schemes--beneficiaries)
-  - [6. Farmer Marketplace & Orders](#6-farmer-marketplace--orders)
-  - [7. Partner NGOs Directory](#7-partner-ngos-directory)
-  - [8. Myth vs Fact (Superstition Buster)](#8-myth-vs-fact-superstition-buster)
-  - [9. AI Voice Mentor (Vapi Integration)](#9-ai-voice-mentor-vapi-integration)
-- [Response & Error Formats](#-response--error-formats)
-- [Testing Suite](#-testing-suite)
-- [DevOps, Docker & Kubernetes](#-devops-docker--kubernetes)
-- [Jenkins CI/CD Automation](#-jenkins-cicd-automation)
-- [Troubleshooting & FAQs](#-troubleshooting--faqs)
+- [🚀 DevOps & Cloud Architecture Overview](#-devops--cloud-architecture-overview)
+- [🛠️ DevOps & Platform Technology Stack](#️-devops--platform-technology-stack)
+- [☁️ AWS Cloud Infrastructure](#️-aws-cloud-infrastructure)
+- [☸️ Kubernetes Cluster Architecture](#️-kubernetes-cluster-architecture)
+- [🐳 Docker Containerization & Docker Hub](#-docker-containerization--docker-hub)
+- [🔍 SonarQube Code Quality & Security Analysis](#-sonarqube-code-quality--security-analysis)
+- [🔄 Jenkins CI/CD Automation Pipeline](#-jenkins-cicd-automation-pipeline)
+- [📊 Monitoring & Observability Stack (Prometheus & Grafana)](#-monitoring--observability-stack-prometheus--grafana)
+- [🗄️ Database Architecture & Supabase PostgreSQL](#️-database-architecture--supabase-postgresql)
+- [🌟 Platform Application Modules](#-platform-application-modules)
+- [📁 Repository & Directory Layout](#-repository--directory-layout)
+- [⚙️ Environment Configuration](#️-environment-configuration)
+- [📡 Complete REST API Reference](#-complete-rest-api-reference)
+- [🧪 Testing & Quality Assurance](#-testing--quality-assurance)
+- [🚀 Quick Start & Operations Runbook](#-quick-start--operations-runbook)
+- [❓ Troubleshooting & FAQs](#-troubleshooting--faqs)
 
 ---
 
-## 🌟 Vision & Core Modules
+## 🚀 DevOps & Cloud Architecture Overview
 
-Gram Mitra bridges the critical digital gap for rural India with essential services accessible over responsive web and mobile interfaces:
-
-1. **🏥 Rural Healthcare & Veterinary Network**: Find human hospitals (PHCs, CHCs, Civil Hospitals) and veterinary clinics, query clinical services, search nearby facilities using real-time GPS coordinates (Haversine formula), and access 24/7 emergency helplines (`108`, `102`, `104`, `1962`, `112`).
-2. **📢 Village Grievance Redressal**: Citizens can report infrastructure or community issues (drinking water, roads, power, sanitation) with geo-location, track priority levels, and audit chronological status update trails.
-3. **🏛️ Government Schemes Integration**: Live data feed from **data.gov.in** PM-KISAN dataset with resilient in-memory caching, curated directories of major rural welfare programs (PMAY-G, MGNREGA, PMFBY, Ayushman Bharat), and eligibility breakdowns.
-4. **🌾 Farmer Produce Marketplace**: Peer-to-peer farmer trading eliminating middlemen. List crops/produce, browse categories with price filters, place orders with inventory deduction, and manage fulfillment stages.
-5. **🤝 Verified Partner NGOs Directory**: Connect rural families with accredited NGOs working across agricultural training, education, animal welfare, and women empowerment.
-6. **💡 Myth vs Fact (Superstition Buster)**: Debunk prevalent rural myths, health misconceptions, and agricultural superstitions with verified scientific facts and authority citations.
-7. **🎙️ AI Voice Mentor**: Voice AI assistant powered by Vapi Web SDK for voice queries, agricultural advisories, and bilingual assistance for low-literacy users.
-
----
-
-## 📁 Architecture & Folder Structure
-
-The project follows a **Clean Layered Architecture** separating routing, business logic, persistence, and external service communication:
+The Gram-Mitra backend is packaged as a containerized service published to **Docker Hub** (`ak3806/gram-mitra-backend:latest`), analyzed with **SonarQube**, orchestrated on a **Kubernetes cluster hosted on an AWS EC2 instance**, automated via a **Jenkins CI/CD Pipeline**, and monitored in real-time with **Prometheus, Grafana, Alertmanager, and Node Exporter**.
 
 ```text
-backend/
-├── src/
-│   ├── server.js               # Entry point, HTTP listener & graceful shutdown handlers
-│   ├── app.js                  # Express app setup, CORS, Helmet, Morgan, and route mounting
-│   ├── config/
-│   │   ├── index.js            # Environment config parser with validation & defaults
-│   │   └── supabase.js         # Supabase client instantiation (anon + service role)
-│   ├── controllers/            # Request handlers, input validation, and response formatting
-│   │   ├── auth.controller.js          # Registration, login, profile management
-│   │   ├── health.controller.js        # Uptime and health check logic
-│   │   ├── healthcare.controller.js    # Hospitals, veterinary, and clinical services
-│   │   ├── marketplace.controller.js   # Products, categories, and order workflows
-│   │   ├── ngo.controller.js           # Partner NGO directory & metrics
-│   │   ├── problem.controller.js       # Citizen problem reporting & update timeline
-│   │   ├── scheme.controller.js        # data.gov.in integration & scheme catalog
-│   │   ├── superstition.controller.js  # Myth vs Fact catalog & verification
-│   │   └── voice.controller.js         # Vapi AI mentor session, webhooks & logs
-│   ├── routes/                 # Express Router module definitions (mounted at /api/v1)
-│   │   ├── index.js            # Master router aggregating all modular sub-routes
-│   │   ├── auth.routes.js              # /api/v1/auth
-│   │   ├── health.routes.js            # /api/v1/health
-│   │   ├── healthcare.routes.js        # /api/v1/healthcare
-│   │   ├── marketplace.routes.js       # /api/v1/marketplace
-│   │   ├── ngo.routes.js               # /api/v1/ngos
-│   │   ├── problem.routes.js           # /api/v1/village-problems
-│   │   ├── scheme.routes.js            # /api/v1/schemes
-│   │   ├── superstition.routes.js      # /api/v1/superstitions
-│   │   └── voice.routes.js             # /api/v1/voice
-│   ├── services/               # Core business logic & external API communication
-│   │   ├── healthcare.service.js       # Facilities spatial search & catalog logic
-│   │   ├── marketplace.service.js      # Produce catalog, stock lock & order state
-│   │   ├── ngo.service.js              # NGO filtering and contact registry
-│   │   ├── problem.service.js          # Problem lifecycle, audit trail & stats
-│   │   ├── scheme.service.js           # data.gov.in fetcher, memory cache & fallbacks
-│   │   └── voice.service.js            # Vapi session config & webhook processor
-│   ├── models/
-│   │   └── index.js            # Supabase table definition references
-│   ├── middleware/             # Express middlewares
-│   │   ├── auth.middleware.js          # JWT & Supabase auth (requireAuth / optionalAuth)
-│   │   ├── errorHandler.js             # Centralized global error handling middleware
-│   │   └── notFound.js                 # 404 handler for unmapped endpoints
-│   ├── utils/                  # Cross-cutting utilities
-│   │   ├── logger.js                   # Colorized structured console logger
-│   │   └── response.js                 # Unified sendSuccess & sendError response formatters
-│   ├── db/
-│   │   └── schema.sql          # Complete PostgreSQL DDL (tables, indexes, triggers)
-│   └── scripts/
-│       └── test-db.js          # Database connectivity & table existence check script
-├── tests/                      # Automated Jest & Supertest integration test suites
-│   ├── auth.test.js
-│   ├── health.test.js
-│   ├── healthcare.test.js
-│   ├── marketplace.test.js
-│   ├── ngo.test.js
-│   ├── problem.test.js
-│   ├── schemes.test.js
-│   └── superstition.test.js
-├── k8s/                        # Kubernetes production deployment manifests
-│   ├── configmap.yaml          # ConfigMap for runtime app properties
-│   ├── deployment.yaml         # Deployment with readiness & liveness probes
-│   ├── secret.yaml             # K8s Secrets for credentials & tokens
-│   └── service.yaml            # LoadBalancer/NodePort service definition
-├── Dockerfile                  # Multi-stage lightweight Node Alpine container build
-├── docker-compose.yml          # Standalone Docker Compose runner
-├── docker-compose.jenkins.yml  # Dedicated runner for Jenkins CI environment
-├── Jenkinsfile                 # End-to-end 7-stage CI/CD automated pipeline
-├── .env.example                # Sample environment template
-├── package.json                # Dependencies, scripts, and project metadata
-└── README.md                   # This documentation
+                         ┌────────────────────────────────────────┐
+                         │           Developer Workstation        │
+                         │           GitHub Repository (Push)     │
+                         └───────────────────┬────────────────────┘
+                                             │
+                                             ▼
+                         ┌────────────────────────────────────────┐
+                         │             Jenkins Server             │
+                         │           (Automated CI/CD)            │
+                         │  - SCM Checkout                        │
+                         │  - npm ci (Install Dependencies)       │
+                         │  - npm test (Jest / Supertest Suite)   │
+                         └───────────────────┬────────────────────┘
+                                             │
+                                             ▼
+                         ┌────────────────────────────────────────┐
+                         │               SonarQube                │
+                         │     Code Quality & Security Scan       │
+                         │     (Quality Gate Verification)        │
+                         └───────────────────┬────────────────────┘
+                                             │ [Quality Gate Passed]
+                                             ▼
+                         ┌────────────────────────────────────────┐
+                         │         Docker Build & Package         │
+                         │   ak3806/gram-mitra-backend:latest     │
+                         └───────────────────┬────────────────────┘
+                                             │
+                                             ▼
+                         ┌────────────────────────────────────────┐
+                         │              Docker Hub                │
+                         │           Container Registry           │
+                         └───────────────────┬────────────────────┘
+                                             │
+                                             ▼
+  ┌────────────────────────────────────────────────────────────────────────────────────────┐
+  │                                    AWS EC2 INSTANCE                                    │
+  │                                                                                        │
+  │  ┌──────────────────────────────────────────────────────────────────────────────────┐  │
+  │  │                            Kubernetes Cluster (kubeadm)                          │  │
+  │  │                           Container Network Interface (Flannel)                  │  │
+  │  │                                                                                  │  │
+  │  │  ┌────────────────────────────────────────────────────────────────────────────┐  │  │
+  │  │  │             Gram-Mitra Backend Workload (Deployment: 2 Replicas)           │  │  │
+  │  │  │                                                                            │  │  │
+  │  │  │   ┌─────────────────────────────┐        ┌─────────────────────────────┐   │  │  │
+  │  │  │   │  Pod 1: gram-mitra-backend  │        │  Pod 2: gram-mitra-backend  │   │  │  │
+  │  │  │   │  (Port 5000 | Node.js/Exp)  │        │  (Port 5000 | Node.js/Exp)  │   │  │  │
+  │  │  │   └──────────────┬──────────────┘        └──────────────┬──────────────┘   │  │  │
+  │  │  └──────────────────┼──────────────────────────────────────┼──────────────────┘  │  │
+  │  │                     └──────────────────┬───────────────────┘                     │  │
+  │  │                                        ▼                                         │  │
+  │  │                      Kubernetes Service: NodePort 30442                          │  │
+  │  │                       (Routes traffic to Pods on Port 5000)                      │  │
+  │  │                                                                                  │  │
+  │  │  ┌────────────────────────────────────────────────────────────────────────────┐  │  │
+  │  │  │                         Monitoring & Observability                         │  │  │
+  │  │  │                                                                            │  │  │
+  │  │  │  ┌─────────────────────┐    Scrapes     ┌───────────────────────────────┐  │  │  │
+  │  │  │  │   Node Exporter     │ ─────────────► │          Prometheus           │  │  │  │
+  │  │  │  │ kube-state-metrics  │    Metrics     │       (TSDB & Queries)        │  │  │  │
+  │  │  │  └─────────────────────┘                └───────────────┬───────────────┘  │  │  │
+  │  │  │                                                         │                  │  │  │
+  │  │  │                                                         ▼                  │  │  │
+  │  │  │                                         ┌───────────────────────────────┐  │  │  │
+  │  │  │                                         │      Grafana Dashboards       │  │  │  │
+  │  │  │                                         │    (Visualization & Alerts)   │  │  │  │
+  │  │  │                                         └───────────────────────────────┘  │  │  │
+  │  │  └────────────────────────────────────────────────────────────────────────────┘  │  │
+  │  └────────────────────────────────────────┬─────────────────────────────────────────┘  │
+  └───────────────────────────────────────────┼────────────────────────────────────────────┘
+                                              │
+                         ┌────────────────────┴───────────────────┐
+                         │                                        │
+                         ▼                                        ▼
+             ┌────────────────────────┐              ┌────────────────────────┐
+             │  Supabase PostgreSQL   │              │   External Public APIs │
+             │  (Cloud Hosted DB &    │              │   - data.gov.in Schemes│
+             │   Auth / Storage RLS)  │              │   - Vapi AI Voice Web  │
+             └────────────────────────┘              └────────────────────────┘
 ```
 
 ---
 
-## 🛠️ Tech Stack
+## 🛠️ DevOps & Platform Technology Stack
 
-- **Runtime**: [Node.js](https://nodejs.org/) (v18.x or v20.x recommended, Docker uses Node 22-Alpine)
-- **Framework**: [Express.js](https://expressjs.com/) (v4.21.2)
-- **Database & Auth**: [Supabase](https://supabase.com/) (PostgreSQL 15+, Row-Level Security, Supabase Auth)
-- **Security & Headers**: [Helmet](https://helmetjs.github.io/), [CORS](https://github.com/expressjs/cors)
-- **Logging**: [Morgan](https://github.com/expressjs/morgan) (HTTP traffic) + Custom Structured Logger
-- **Voice AI Agent**: [Vapi AI](https://vapi.ai/) Web SDK & Webhook handlers
-- **External Public API**: [Open Government Data (OGD) Platform India](https://data.gov.in)
-- **Testing**: [Jest](https://jestjs.io/) (v29.7) & [Supertest](https://github.com/ladjs/supertest)
-- **Containerization**: [Docker](https://www.docker.com/) & [Docker Compose](https://docs.docker.com/compose/)
-- **Orchestration**: [Kubernetes (k8s)](https://kubernetes.io/) / [Minikube](https://minikube.sigs.k8s.io/)
-- **CI/CD**: [Jenkins](https://www.jenkins.io/) Declarative Pipeline
-
----
-
-## 🗄️ Database Architecture & Schema
-
-The persistence layer uses **PostgreSQL hosted on Supabase**. All table definitions, foreign keys, cascades, performance indexes, and automatic timestamp update triggers are maintained in [`src/db/schema.sql`](file:///c:/Users/kirve/OneDrive/Desktop/gram-mitra/backend/src/db/schema.sql).
-
-### Entity Relationship Summary
-
-```mermaid
-erDiagram
-    PROFILES ||--o{ VILLAGE_PROBLEMS : "reports"
-    PROFILES ||--o{ PROBLEM_UPDATES : "authors"
-    PROFILES ||--o{ PRODUCTS : "sells"
-    PROFILES ||--o{ ORDERS : "places as buyer"
-    PROFILES ||--o{ ORDERS : "receives as seller"
-    HOSPITALS ||--o{ HOSPITAL_SERVICES : "offers"
-    VILLAGE_PROBLEMS ||--o{ PROBLEM_UPDATES : "has history"
-    PRODUCTS ||--o{ ORDERS : "ordered in"
-```
-
-### Table Specifications
-
-| Table | Primary Key | Description & Key Columns |
-|---|---|---|
-| `profiles` | `id` (UUID references `auth.users`) | Extended user profile: `full_name`, `phone`, `email`, `age`, `state`, `district`, `village`, `profile_image_url`. |
-| `hospitals` | `id` (UUID) | Human & veterinary healthcare facilities: `name`, `type` (`human` \| `animal`), `address`, `district`, `state`, `latitude`, `longitude`, `phone`, `is_emergency`, `is_active`. |
-| `hospital_services` | `id` (UUID) | Clinical/medical services: `hospital_id` (FK), `service_name`, `description`, `available`. |
-| `village_problems` | `id` (UUID) | Citizen grievance tickets: `reported_by` (FK), `title`, `description`, `category` (`water`, `road`, `electricity`, `agriculture`, `healthcare`, `sanitation`, `animal`, `other`), `status` (`reported`, `under_review`, `in_progress`, `resolved`, `rejected`), `priority` (`low`, `medium`, `high`, `urgent`), `latitude`, `longitude`, `village`, `district`. |
-| `problem_updates` | `id` (UUID) | Chronological status history: `problem_id` (FK), `updated_by` (FK), `status`, `comment`, `image_url`. |
-| `products` | `id` (UUID) | Marketplace produce: `seller_id` (FK), `name`, `category`, `price`, `unit` (`kg`, `quintal`, `litre`, etc.), `quantity`, `is_available`, `district`, `state`. |
-| `orders` | `id` (UUID) | Marketplace transactions: `product_id` (FK), `buyer_id` (FK), `seller_id` (FK), `buyer_name`, `buyer_phone`, `quantity`, `unit_price`, `total_price`, `status` (`pending`, `confirmed`, `processing`, `shipped`, `delivered`, `cancelled`), `payment_method`, `payment_status`. |
-| `ngos` | `id` (UUID) | Partner non-profit directory: `name`, `category`, `phone`, `email`, `website`, `address`, `state`, `district`, `latitude`, `longitude`, `services`, `is_active`. |
-| `myths` | `id` (UUID) | Myth vs Fact entries: `title`, `myth`, `fact`, `explanation`, `category`, `language`, `source`, `is_verified`. |
-
-### Performance Indexes & Triggers
-- B-tree indexes are set on `profiles(phone)`, `hospitals(type, district)`, `hospitals(is_active)`, `village_problems(district, status)`, `products(seller_id, category)`, `orders(buyer_id, seller_id, status)`, and `ngos(district, category)`.
-- Automatic `BEFORE UPDATE` trigger function (`update_updated_at_column()`) keeps `updated_at` timestamps accurate across all dynamic tables.
-
----
-
-## ⚙️ Environment Configuration
-
-Create a `.env` file in the `backend/` directory by copying the sample template:
-
-```bash
-cp .env.example .env
-```
-
-### Complete Environment Variables Reference
-
-| Variable | Required | Default Value | Description |
+| Category | Technology | Version / Specification | Purpose |
 |---|---|---|---|
-| `PORT` | Optional | `5000` | HTTP port where Express server listens. |
-| `NODE_ENV` | Optional | `development` | Environment mode (`development`, `production`, `test`). |
-| `APP_NAME` | Optional | `Gram Mitra Backend` | Application branding name displayed in health check. |
-| `API_VERSION` | Optional | `v1` | URL version prefix for routing (`/api/v1`). |
-| `CORS_ORIGIN` | Optional | `*` | Allowed CORS origins (comma-separated origins or `*` for public). |
-| `SUPABASE_URL` | **Required** | — | Project URL from Supabase Settings (`https://<ref>.supabase.co`). |
-| `SUPABASE_ANON_KEY` | **Required** | — | Public anonymous client API key from Supabase. |
-| `SUPABASE_SERVICE_ROLE_KEY` | Optional | — | Administrative service role key for backend DB bypass of RLS. |
-| `DATABASE_URL` | Optional | — | Direct PostgreSQL connection string (for external migration tools). |
-| `JWT_SECRET` | Optional | — | Secret string for custom JWT validation (if not delegating to Supabase). |
-| `JWT_EXPIRES_IN` | Optional | `7d` | Default token validity lifetime. |
-| `DATA_GOV_API_KEY` | Optional | — | API Key from [data.gov.in](https://data.gov.in) to query live beneficiary records. |
-| `DATA_GOV_BASE_URL` | Optional | `https://api.data.gov.in/resource` | Base endpoint for India OGD resource queries. |
-| `DATA_GOV_RESOURCE_ID` | Optional | `388208c6-d82a-4190-90df-91aa2c326fec` | Official PM-KISAN beneficiary resource identifier. |
-| `DATA_GOV_CACHE_TTL_MS`| Optional | `600000` (10 min) | In-memory cache duration in milliseconds for data.gov.in payloads. |
-| `VAPI_PUBLIC_KEY` | Optional | — | Public key from Vapi Dashboard to initialize web voice calls. |
-| `VAPI_ASSISTANT_ID` | Optional | — | Vapi AI Assistant ID pre-configured for agricultural assistance. |
-| `VAPI_SERVER_SECRET` | Optional | — | Webhook verification secret for incoming Vapi server callbacks. |
+| **Source Control** | **GitHub** | Git Distributed SCM | Source repository, branch protection, commit hooks |
+| **CI/CD Automation** | **Jenkins** | Declarative Pipeline | Continuous Integration, automated testing, image builds, zero-downtime deployment |
+| **Code Quality / SAST**| **SonarQube** | Static Analysis Engine | Code quality verification, vulnerability scanning, code smell detection & Quality Gate |
+| **Container Engine** | **Docker** | Node 22-Alpine Multi-Stage | Lightweight, reproducible containerization of Node.js / Express backend |
+| **Image Registry** | **Docker Hub** | `ak3806/gram-mitra-backend` | Centralized container image storage and distribution |
+| **Cloud Provider** | **AWS EC2** | Ubuntu Linux Instance | High-availability cloud compute host for the Kubernetes cluster |
+| **Orchestration** | **Kubernetes** | `kubeadm` v1.28+ | High-availability container scheduling, auto-healing, and scaling |
+| **Pod Networking** | **Flannel CNI** | `10.244.0.0/16` CIDR | Layer 3 overlay network fabric for inter-pod routing |
+| **Package Manager**| **Helm** | Helm v3 | Package management for monitoring charts (`kube-prometheus-stack`) |
+| **Metrics Engine** | **Prometheus** | Core Server + Alertmanager | Pull-based timeseries scraping for CPU, memory, HTTP request latencies |
+| **Visualization**  | **Grafana** | Web UI Dashboards | Real-time monitoring panels for Kubernetes nodes, pods, and application metrics |
+| **Cluster Metrics**| **kube-state-metrics** | v2.x | Generates health and deployment metrics from Kubernetes API objects |
+| **Host Metrics**   | **Node Exporter** | DaemonSet | Collects hardware and OS-level metrics from the EC2 host |
+| **Cluster CLI**    | **kubectl** | CLI | Primary administrative tool for manifest application and cluster management |
+| **Database**       | **Supabase** | PostgreSQL 15+ | Managed relational database with connection pooling and Row-Level Security |
+| **Application**    | **Node.js / Express** | Node.js 18+ / Express 4.21.2 | Layered RESTful backend with Helmet, CORS, and Morgan |
+| **Testing**        | **Jest & Supertest**| Jest 29.7 / Supertest 7.0 | Automated integration test coverage across all domain modules |
 
 ---
 
-## 🚀 Quick Start & Local Setup
+## ☁️ AWS Cloud Infrastructure
 
-### Prerequisites
-- [Node.js](https://nodejs.org/) v18.0.0 or higher
-- [npm](https://www.npmjs.com/) v9.0.0 or higher
-- A free [Supabase](https://supabase.com/) account and project
+The infrastructure runs on an **AWS EC2 instance** configured as the host node for the Kubernetes cluster:
 
-### Step 1: Install Dependencies
-```bash
-npm install
+```text
+AWS Cloud
+└── EC2 Instance (Ubuntu Server)
+    ├── Container Runtime (containerd)
+    ├── Kubernetes Control Plane & Worker Node (Single-Node/Multi-Node Setup)
+    ├── Networking (Flannel Overlay CNI)
+    ├── Gram-Mitra Backend (Deployment with 2 Replicas, NodePort Service)
+    └── Observability Stack (Prometheus, Grafana, Node Exporter, kube-state-metrics)
 ```
 
-### Step 2: Configure Database Schema
-1. Open your project on the [Supabase Dashboard](https://supabase.com/dashboard).
-2. Navigate to the **SQL Editor** on the left menu.
-3. Open [`src/db/schema.sql`](file:///c:/Users/kirve/OneDrive/Desktop/gram-mitra/backend/src/db/schema.sql), copy its entire contents, paste into the SQL editor, and click **Run**.
-4. Verify table creation by running the built-in diagnostic script:
-   ```bash
-   npm run db:check
-   ```
+### AWS Security Group Configuration
 
-### Step 3: Launch the Server
-- **Development Mode** (with native Node `--watch` reload):
-  ```bash
-  npm run dev
-  ```
-- **Alternative Development Mode** (using Nodemon):
-  ```bash
-  npm run dev:nodemon
-  ```
-- **Production Mode**:
-  ```bash
-  npm start
-  ```
-- **Run Integration Tests**:
-  ```bash
-  npm test
-  ```
+To allow external access to the application, monitoring tools, and management consoles, the following inbound rules are provisioned on AWS:
 
-Once started, the API is available at: **`http://localhost:5000`** with routes under **`http://localhost:5000/api/v1`**.
-
----
-
-## 📡 API Reference Guide
-
-All endpoints return unified JSON structures and respond under the `/api/v1` prefix unless stated otherwise.
-
-### 1. System & Health Check
-
-| Method | Endpoint | Description | Auth Required |
+| Port / Range | Protocol | Source | Purpose |
 |---|---|---|---|
-| `GET` | `/` | Root verification ping returning basic greeting & status | Public |
-| `GET` | `/api/v1/health` | Comprehensive health check with uptime, memory, environment & timestamp | Public |
-
-#### Sample Health Check Response (`GET /api/v1/health`)
-```json
-{
-  "status": "OK",
-  "service": "Gram Mitra Backend",
-  "environment": "development",
-  "uptime": "12.45s",
-  "timestamp": "2026-10-04T17:15:30.123Z"
-}
-```
+| `22` | TCP | SSH Admin IP | Secure shell server administration |
+| `80` / `443` | TCP | `0.0.0.0/0` | Web HTTP/HTTPS reverse proxy traffic |
+| `5000` | TCP | Cluster Internal | Gram-Mitra container internal listener |
+| `30442` | TCP | `0.0.0.0/0` | **Kubernetes NodePort Service** (Gram-Mitra Backend public endpoint) |
+| `8080` | TCP | Admin IP | Jenkins Web Dashboard |
+| `9000` | TCP | Admin IP | SonarQube Server Web Dashboard & API |
+| `9090` | TCP | Admin IP | Prometheus Server Dashboard |
+| `3000` | TCP | Admin IP | Grafana Metrics & Alerting Dashboard |
+| `6443` | TCP | Cluster Nodes | Kubernetes API Server endpoint |
 
 ---
 
-### 2. Authentication & User Profile
-Mounted at `/api/v1/auth`.
+## ☸️ Kubernetes Cluster Architecture
 
-| Method | Endpoint | Description | Auth Required |
-|---|---|---|---|
-| `POST` | `/api/v1/auth/register` | Register new user with email/phone, password & profile info | Public |
-| `POST` | `/api/v1/auth/login` | Login user, returning Supabase session token & user profile | Public |
-| `GET` | `/api/v1/auth/me` | Fetch authenticated user's profile and credentials | Bearer Token |
-| `PUT` | `/api/v1/auth/me` | Update authenticated user's personal details, address, or picture | Bearer Token |
-| `POST` | `/api/v1/auth/logout` | Revoke session and sign out | Bearer Token |
-
-#### Registration Payload Example (`POST /api/v1/auth/register`)
-```json
-{
-  "email": "ramesh.farmer@example.com",
-  "password": "StrongPassword123!",
-  "fullName": "Ramesh Patil",
-  "phone": "+919876543210",
-  "age": 42,
-  "state": "Maharashtra",
-  "district": "Pune",
-  "village": "Baramati"
-}
-```
-
----
-
-### 3. Healthcare & Veterinary Directory
-Mounted at `/api/v1/healthcare`.
-
-#### Facilities & Emergency
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/api/v1/healthcare` | Browse facilities (filters: `type=human\|animal`, `district`, `search`, `service`, `lat`, `lng`, `radius`) |
-| `GET` | `/api/v1/healthcare/nearby` | Real-time GPS radius search using Haversine formula (`lat`, `lng`, `radius` in km) |
-| `GET` | `/api/v1/healthcare/emergency` | 24/7 emergency facilities and national rural helplines (`108`, `102`, `104`, `1962`, `112`) |
-| `GET` | `/api/v1/healthcare/:id` | View any facility by its UUID with associated services |
-
-#### Human Hospitals (`/api/v1/healthcare/hospitals`)
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/api/v1/healthcare/hospitals` | List human hospitals, Primary Health Centres (PHC), & CHCs |
-| `POST` | `/api/v1/healthcare/hospitals` | Register a new human healthcare facility |
-| `GET` | `/api/v1/healthcare/hospitals/:id` | Human hospital profile including available services |
-| `PUT` | `/api/v1/healthcare/hospitals/:id` | Update facility contact, address, or emergency status |
-| `DELETE`| `/api/v1/healthcare/hospitals/:id` | Deactivate/remove human hospital |
-| `GET` | `/api/v1/healthcare/hospitals/:id/services` | Retrieve list of services offered by specific hospital |
-| `POST` | `/api/v1/healthcare/hospitals/:id/services` | Add new clinical service to hospital |
-
-#### Veterinary Facilities (`/api/v1/healthcare/veterinary`)
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/api/v1/healthcare/veterinary` | List animal clinics, polyclinics, and veterinary dispensaries |
-| `POST` | `/api/v1/healthcare/veterinary` | Register an animal healthcare facility |
-| `GET` | `/api/v1/healthcare/veterinary/:id` | View veterinary facility profile with animal medical services |
-| `PUT` | `/api/v1/healthcare/veterinary/:id` | Update veterinary clinic details |
-| `DELETE`| `/api/v1/healthcare/veterinary/:id` | Remove veterinary clinic |
-| `GET` | `/api/v1/healthcare/veterinary/:id/services` | View animal services for this clinic |
-| `POST` | `/api/v1/healthcare/veterinary/:id/services` | Add animal service to this clinic |
-
-#### Healthcare Services (`/api/v1/healthcare/services`)
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/api/v1/healthcare/services/catalog` | Curated catalog of government rural health & veterinary schemes |
-| `GET` | `/api/v1/healthcare/services` | Search across all services (OPD, vaccination, cattle AI, ambulance) |
-| `POST` | `/api/v1/healthcare/services` | Create new service linked to a hospital |
-| `GET` | `/api/v1/healthcare/services/:id` | Service profile with parent hospital details |
-| `PUT` | `/api/v1/healthcare/services/:id` | Modify service info or toggle `available` |
-| `DELETE`| `/api/v1/healthcare/services/:id` | Delete service |
-
----
-
-### 4. Village Problem Redressal
-Mounted at `/api/v1/village-problems` (aliased as `/api/v1/problems`).
-
-| Method | Endpoint | Description |
-|---|---|---|
-| `POST` | `/api/v1/village-problems` | File a problem report (`title`, `description`, `category`, `priority`, `coordinates`) |
-| `GET` | `/api/v1/village-problems` | Query tickets (filters: `category`, `status`, `priority`, `district`, `village`, `lat`, `lng`, `radius`, `search`) |
-| `GET` | `/api/v1/village-problems/:id` | Get ticket details with reporter profile & resolution status |
-| `GET` | `/api/v1/village-problems/stats` | Aggregated analytics (resolution rate, breakdown by category & status) |
-| `GET` | `/api/v1/village-problems/metadata` | Reference metadata (valid categories, allowed priorities, status transitions) |
-| `PATCH`| `/api/v1/village-problems/:id/status` | Advance ticket status (`reported` ➔ `under_review` ➔ `in_progress` ➔ `resolved` ➔ `rejected`) with notes |
-| `GET` | `/api/v1/village-problems/:id/history` | Chronological audit trail of all status updates & comments |
-| `PUT` | `/api/v1/village-problems/:id` | Edit problem details |
-| `DELETE`| `/api/v1/village-problems/:id` | Remove problem and associated update trail |
-
-#### Problem Creation Payload Example (`POST /api/v1/village-problems`)
-```json
-{
-  "title": "Broken Handpump in East Ward",
-  "description": "The main drinking water handpump has been dry and damaged for 3 days.",
-  "category": "water",
-  "priority": "high",
-  "state": "Maharashtra",
-  "district": "Pune",
-  "village": "Baramati",
-  "latitude": 18.1524,
-  "longitude": 74.5772
-}
-```
-
----
-
-### 5. Government Schemes & Beneficiaries
-Mounted at `/api/v1/schemes`.
-
-Integrated with **data.gov.in** PM-KISAN beneficiary resource API with smart in-memory caching and fallback catalogs.
-
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/api/v1/schemes` | Fetch live village beneficiary records (supports `limit`, `offset`, `state`, `district`, `block`, `village`, `search`, `refresh`) |
-| `GET` | `/api/v1/schemes/catalog` | Curated directory of flagship rural schemes (PM-KISAN, PMAY-G, MGNREGA, PMFBY, Ayushman Bharat) with benefits & eligibility |
-| `GET` | `/api/v1/schemes/stats` | High-level metrics (male, female, transgender, total beneficiaries) |
-| `GET` | `/api/v1/schemes/ngos` | Accredited partner NGOs assisting villagers with scheme registration |
-| `GET` | `/api/v1/schemes/:id` | Detailed scheme view with live village snapshot (e.g. `pm-kisan`) |
-
----
-
-### 6. Farmer Marketplace & Orders
-Mounted at `/api/v1/marketplace`.
-
-#### Products & Listings
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/api/v1/marketplace/products` | Browse produce items (filters: `category`, `search`, `minPrice`, `maxPrice`, `district`, `state`, `is_available`, `limit`, `offset`) |
-| `GET` | `/api/v1/marketplace/categories` | Distinct categories with product count and price ranges |
-| `GET` | `/api/v1/marketplace/stats` | Overall market metrics (total listings, active supply, avg price) |
-| `GET` | `/api/v1/marketplace/products/:id` | Detailed product profile with seller contact info |
-| `POST` | `/api/v1/marketplace/products` | Publish a new produce listing (validates stock, price, unit) |
-| `PUT` | `/api/v1/marketplace/products/:id` | Update price, quantity, availability, or location |
-| `DELETE`| `/api/v1/marketplace/products/:id` | Deactivate/remove produce listing |
-| `GET` | `/api/v1/marketplace/my-listings` | Get listings published by authenticated seller |
-
-#### Orders & Transactions
-| Method | Endpoint | Description |
-|---|---|---|
-| `POST` | `/api/v1/marketplace/orders` | Place an order (validates stock availability, deducts inventory, calculates total) |
-| `GET` | `/api/v1/marketplace/orders` | Query orders (filters: `buyer_id`, `seller_id`, `product_id`, `status`) |
-| `GET` | `/api/v1/marketplace/orders/stats` | Order analytics (total volume, gross revenue, status counts) |
-| `GET` | `/api/v1/marketplace/orders/:id` | Get single order profile with linked product & seller details |
-| `PATCH`| `/api/v1/marketplace/orders/:id/status` | Update order status (`pending` ➔ `confirmed` ➔ `shipped` ➔ `delivered` / `cancelled`) |
-| `DELETE`| `/api/v1/marketplace/orders/:id` | Cancel order and **automatically restore product stock** |
-
-#### Create Order Payload Example (`POST /api/v1/marketplace/orders`)
-```json
-{
-  "product_id": "9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d",
-  "buyer_name": "Suresh Deshmukh",
-  "buyer_phone": "+919822334455",
-  "quantity": 50,
-  "delivery_address": "Near Panchayat Office, Main Road",
-  "delivery_village": "Baramati",
-  "delivery_district": "Pune",
-  "delivery_state": "Maharashtra",
-  "payment_method": "cod"
-}
-```
-
----
-
-### 7. Partner NGOs Directory
-Mounted at `/api/v1/ngos` (aliased as `/api/v1/ngo`).
-
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/api/v1/ngos` | Directory of partner NGOs (filters: `category`, `district`, `state`, `village`, `service`, `search`, `lat`, `lng`, `radius`) |
-| `GET` | `/api/v1/ngos/categories` | Distinct NGO categories with total counts |
-| `GET` | `/api/v1/ngos/stats` | Network statistics (total NGOs, districts covered, active count) |
-| `GET` | `/api/v1/ngos/:id` | View complete NGO profile, services, and contact info |
-| `POST` | `/api/v1/ngos` | Register a new partner NGO |
-| `PUT` | `/api/v1/ngos/:id` | Update NGO contact or program information |
-| `DELETE`| `/api/v1/ngos/:id` | Deactivate/remove NGO |
-
----
-
-### 8. Myth vs Fact (Superstition Buster)
-Mounted at `/api/v1/superstitions` (aliased as `/api/v1/myths`).
-
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/api/v1/superstitions` | Query myths (filters: `category`, `language`, `search`, `is_verified`, `limit`, `offset`) |
-| `GET` | `/api/v1/superstitions/categories`| List available myth categories with item counts |
-| `GET` | `/api/v1/superstitions/stats` | Metrics (total entries, verified count, supported languages) |
-| `GET` | `/api/v1/superstitions/random` | Get random / "Myth of the Day" entry |
-| `GET` | `/api/v1/superstitions/:id` | Retrieve single myth vs scientific fact details |
-| `POST` | `/api/v1/superstitions` | Submit a new rural superstition / myth |
-| `PUT` | `/api/v1/superstitions/:id` | Update myth entry |
-| `DELETE`| `/api/v1/superstitions/:id` | Delete myth entry |
-| `PATCH`| `/api/v1/superstitions/:id/verify`| Mark myth as scientifically verified with source attribution |
-
----
-
-### 9. AI Voice Mentor (Vapi Integration)
-Mounted at `/api/v1/voice`.
-
-| Method | Endpoint | Description |
-|---|---|---|
-| `POST` | `/api/v1/voice/session` | Initialize Vapi Web Call session, return credentials & mentor prompt |
-| `GET` | `/api/v1/voice/config` | Retrieve active mentor profiles (Kisan Mitra, Aarogya Mitra) |
-| `POST` | `/api/v1/voice/webhook` | Vapi webhook listener (tool calls, conversation transcript, end-of-call report) |
-| `GET` | `/api/v1/voice/logs` | Call session logs & summaries |
-| `POST` | `/api/v1/voice/query` | Text query handler for fallback voice agents |
-
----
-
-## 📦 Response & Error Formats
-
-### Standardized Success Response
-```json
-{
-  "success": true,
-  "message": "Operation completed successfully",
-  "data": { ... }
-}
-```
-
-### Standardized Error Response
-```json
-{
-  "success": false,
-  "error": "Error description message",
-  "details": "Optional diagnostic details or validation errors"
-}
-```
-
----
-
-## 🧪 Testing Suite
-
-Automated integration tests are implemented with **Jest** and **Supertest** covering all major functional domains:
+The Kubernetes cluster was initialized using standard **`kubeadm`** with pod overlay networking:
 
 ```bash
-# Run all tests sequentially with timeout handling
-npm test
-
-# Run tests in watch mode
-npx jest --watch
-
-# Run a specific test suite
-npx jest tests/healthcare.test.js
-npx jest tests/marketplace.test.js
-npx jest tests/schemes.test.js
+sudo kubeadm init --pod-network-cidr=10.244.0.0/16
 ```
 
-### Test Files Overview
-- [`tests/health.test.js`](file:///c:/Users/kirve/OneDrive/Desktop/gram-mitra/backend/tests/health.test.js): Health endpoint and root path tests.
-- [`tests/auth.test.js`](file:///c:/Users/kirve/OneDrive/Desktop/gram-mitra/backend/tests/auth.test.js): Registration, login, profile fetch and error handling.
-- [`tests/healthcare.test.js`](file:///c:/Users/kirve/OneDrive/Desktop/gram-mitra/backend/tests/healthcare.test.js): Hospitals, veterinary clinics, nearby GPS radius search, and emergency hotlines.
-- [`tests/marketplace.test.js`](file:///c:/Users/kirve/OneDrive/Desktop/gram-mitra/backend/tests/marketplace.test.js): Products CRUD, inventory deduction, order placement, status workflow, and cancel/restock.
-- [`tests/problem.test.js`](file:///c:/Users/kirve/OneDrive/Desktop/gram-mitra/backend/tests/problem.test.js): Village problem creation, status transitions, history updates, and statistics.
-- [`tests/schemes.test.js`](file:///c:/Users/kirve/OneDrive/Desktop/gram-mitra/backend/tests/schemes.test.js): data.gov.in integration, caching, and catalog.
-- [`tests/ngo.test.js`](file:///c:/Users/kirve/OneDrive/Desktop/gram-mitra/backend/tests/ngo.test.js): NGO network directory, categories, and detail views.
-- [`tests/superstition.test.js`](file:///c:/Users/kirve/OneDrive/Desktop/gram-mitra/backend/tests/superstition.test.js): Myth listings, random myth, and verification.
+Cluster network routing is powered by **Flannel CNI**:
+
+```bash
+kubectl apply -f https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
+```
+
+### Kubernetes Resources Breakdown
+
+All production manifests are maintained in [`k8s/`](file:///c:/Users/kirve/OneDrive/Desktop/gram-mitra/backend/k8s):
+
+1. **Deployment ([`k8s/deployment.yaml`](file:///c:/Users/kirve/OneDrive/Desktop/gram-mitra/backend/k8s/deployment.yaml))**:
+   - **Replicas**: 2 pods for zero-downtime availability and load distribution.
+   - **Container Image**: `ak3806/gram-mitra-backend:latest`
+   - **Resource Requests & Limits**:
+     - Requests: `100m` CPU, `128Mi` RAM
+     - Limits: `500m` CPU, `512Mi` RAM
+   - **Health Probes**:
+     - **Readiness Probe**: HTTP GET `/api/v1/health` on port 5000 (initial delay: 5s, period: 10s).
+     - **Liveness Probe**: HTTP GET `/` on port 5000 (initial delay: 10s, period: 15s).
+   - **Configuration Mapping**: Injects application settings from `ConfigMap` and secrets from `Secret`.
+
+2. **Service ([`k8s/service.yaml`](file:///c:/Users/kirve/OneDrive/Desktop/gram-mitra/backend/k8s/service.yaml))**:
+   - **Type**: `NodePort`
+   - **NodePort**: `30442`
+   - **Port**: `5000` ➔ **TargetPort**: `5000`
+   - Accessible on EC2 via `http://<EC2-PUBLIC-IP>:30442/api/v1/health`.
+
+3. **ConfigMap ([`k8s/configmap.yaml`](file:///c:/Users/kirve/OneDrive/Desktop/gram-mitra/backend/k8s/configmap.yaml))**:
+   - Stores non-sensitive runtime configurations (`PORT=5000`, `NODE_ENV=production`, `APP_NAME`, `API_VERSION`).
+
+4. **Secret ([`k8s/secret.yaml`](file:///c:/Users/kirve/OneDrive/Desktop/gram-mitra/backend/k8s/secret.yaml))**:
+   - Stores base64-encoded credentials (`SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `DATA_GOV_API_KEY`, `VAPI_PUBLIC_KEY`, `JWT_SECRET`).
 
 ---
 
-## 🐳 DevOps, Docker & Kubernetes
+## 🐳 Docker Containerization & Docker Hub
 
-### 1. Docker Build & Run
+The application utilizes a lightweight multi-stage Docker build based on **`node:22-alpine`** for minimal image footprint and fast startup times.
 
-#### Build Docker Image
-```bash
-docker build -t gram-mitra-backend:latest .
+### Dockerfile Highlights
+```dockerfile
+FROM node:22-alpine AS base
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --only=production
+COPY . .
+EXPOSE 5000
+ENV NODE_ENV=production
+ENV PORT=5000
+CMD ["node", "src/server.js"]
 ```
 
-#### Run Container Standalone
+### Docker Hub Publishing Workflow
+
+```text
+Local / Jenkins Node
+        │
+        ▼
+   docker build -t ak3806/gram-mitra-backend:latest .
+        │
+        ▼
+   docker login -u ak3806 -p <DOCKER_HUB_TOKEN>
+        │
+        ▼
+   docker push ak3806/gram-mitra-backend:latest
+        │
+        ▼
+   Kubernetes Nodes pull image on rollout
+```
+
+### Standalone Docker Execution
 ```bash
+# Pull and run container directly from Docker Hub:
 docker run -d \
   --name gram-mitra-backend \
   -p 5000:5000 \
   --env-file .env \
-  gram-mitra-backend:latest
-```
-
-#### Run via Docker Compose
-```bash
-# Start in detached mode
-docker-compose up -d
-
-# Check logs
-docker-compose logs -f backend
-
-# Stop containers
-docker-compose down
+  ak3806/gram-mitra-backend:latest
 ```
 
 ---
 
-### 2. Kubernetes Deployment (Minikube / Cluster)
+## 🔍 SonarQube Code Quality & Security Analysis
 
-Production-ready Kubernetes configurations are located in the [`k8s/`](file:///c:/Users/kirve/OneDrive/Desktop/gram-mitra/backend/k8s) folder:
+To enforce clean code, high test coverage, and prevent security vulnerabilities, **SonarQube** is integrated into the development lifecycle and the Jenkins CI/CD pipeline.
 
-1. **Configure Secrets**:
-   Copy [`k8s/secret.example.template`](file:///c:/Users/kirve/OneDrive/Desktop/gram-mitra/backend/k8s/secret.example.template) to `k8s/secret.yaml` and fill in your base64-encoded credentials:
-   ```bash
-   # Windows PowerShell base64 encoding example:
-   [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes("your_supabase_url"))
-   ```
+### SonarQube Configuration (`sonar-project.properties`)
 
-2. **Apply Manifests**:
+The project configuration file [`sonar-project.properties`](file:///c:/Users/kirve/OneDrive/Desktop/gram-mitra/backend/sonar-project.properties) specifies key scanning metrics:
+
+```ini
+sonar.projectKey=gram-mitra-backend
+sonar.projectName=Gram Mitra Backend
+sonar.projectVersion=1.0.0
+
+# Source & Test Code Directories
+sonar.sources=src
+sonar.tests=tests
+sonar.sourceEncoding=UTF-8
+sonar.language=js
+
+# Exclusions
+sonar.exclusions=node_modules/**,coverage/**,k8s/**,logs/**,scratch/**
+sonar.test.inclusions=tests/**/*.test.js,tests/**/*.spec.js
+
+# Test Coverage & Execution Reports
+sonar.javascript.lcov.reportPaths=coverage/lcov.info
+sonar.testExecutionReportPaths=test-report.xml
+```
+
+### Quality Gate Criteria
+
+The pipeline enforces a strict **Quality Gate**:
+- **Bugs**: 0 Blocker or Critical bugs.
+- **Vulnerabilities**: 0 High or Critical vulnerabilities (Security Rating: A).
+- **Security Hotspots**: 100% reviewed.
+- **Code Smells & Technical Debt**: Maintainability Rating: A.
+- **Duplication**: Under 3% code duplication across modules.
+- **Coverage**: Minimum 80% line and branch test coverage.
+
+### Running Sonar Scanner Manually
+```bash
+# Generate Jest coverage report
+npm test -- --coverage
+
+# Execute SonarQube Scanner CLI
+sonar-scanner \
+  -Dsonar.host.url=http://<SONARQUBE-IP>:9000 \
+  -Dsonar.login=<SONARQUBE_TOKEN>
+```
+
+---
+
+## 🔄 Jenkins CI/CD Automation Pipeline
+
+Continuous Integration and Continuous Deployment are orchestrated via a declarative **[`Jenkinsfile`](file:///c:/Users/kirve/OneDrive/Desktop/gram-mitra/backend/Jenkinsfile)** ensuring every commit undergoes strict automated testing and static quality gating before reaching production:
+
+```text
+ ┌─────────────┐     ┌─────────────────────┐     ┌──────────────┐     ┌────────────────────┐
+ │ 1. Checkout │ ──► │ 2. npm Dependencies │ ──► │ 3. Unit Test │ ──► │ 4. SonarQube Scan  │
+ └─────────────┘     └─────────────────────┘     └──────────────┘     └─────────┬──────────┘
+                                                                                │
+ ┌──────────────────────┐     ┌───────────────────┐     ┌─────────────────┐     │ [Quality Gate OK]
+ │ 8. Rollout Status OK │ ◄── │ 7. K8s Manifests  │ ◄── │ 6. Docker Push  │ ◄───┤
+ └──────────────────────┘     └───────────────────┘     └─────────────────┘     │ 5. Docker Build
+```
+
+### Pipeline Stages Breakdown
+
+1. **Stage 1: Checkout**: Pulls latest commit from the active Git branch via SCM.
+2. **Stage 2: Install Dependencies**: Executes `npm ci` for fast, reproducible dependency resolution.
+3. **Stage 3: Automated Testing**: Executes `npm test` running the Jest & Supertest integration suite with coverage tracking.
+4. **Stage 4: SonarQube Quality Analysis**:
+   - Executes SonarQube Scanner using `withSonarQubeEnv('SonarQube-Server')`.
+   - Halts pipeline if the **Quality Gate** fails (`waitForQualityGate()`), preventing buggy or vulnerable code from proceeding.
+5. **Stage 5: Docker Build**: Packages the application into Docker image `ak3806/gram-mitra-backend:latest`.
+6. **Stage 6: Registry Distribution**: Pushes image to Docker Hub or loads directly into the local Kubernetes container runtime.
+7. **Stage 7: Deploy to Kubernetes**: Applies manifests (`configmap.yaml`, `secret.yaml`, `deployment.yaml`, `service.yaml`) and triggers a rolling update:
    ```bash
    kubectl apply -f k8s/configmap.yaml
    kubectl apply -f k8s/secret.yaml
    kubectl apply -f k8s/deployment.yaml
    kubectl apply -f k8s/service.yaml
+   kubectl rollout restart deployment/gram-mitra-backend
    ```
-
-3. **Verify Deployment**:
-   ```bash
-   kubectl get pods -l app=gram-mitra-backend
-   kubectl get services gram-mitra-backend-service
-   ```
-
-4. **Access in Minikube**:
-   ```bash
-   minikube service gram-mitra-backend-service --url
-   ```
+8. **Stage 8: Verification**: Monitored by `kubectl rollout status deployment/gram-mitra-backend --timeout=120s`. Automatically rolls back if pods fail readiness probes.
 
 ---
 
-## 🔄 Jenkins CI/CD Automation
+## 📊 Monitoring & Observability Stack (Prometheus & Grafana)
 
-An automated end-to-end declarative pipeline is defined in [`Jenkinsfile`](file:///c:/Users/kirve/OneDrive/Desktop/gram-mitra/backend/Jenkinsfile) containing 7 distinct stages:
+The production cluster is monitored using the Kubernetes-native **Prometheus & Grafana** observability stack installed via Helm:
 
+```bash
+# Helm installation of kube-prometheus-stack
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+helm install monitoring prometheus-community/kube-prometheus-stack \
+  --namespace monitoring \
+  --create-namespace
 ```
-[Checkout] ➔ [Install Dependencies] ➔ [Test (Jest)] ➔ [Docker Build] ➔ [Minikube Load] ➔ [Deploy to K8s] ➔ [Rollout Status]
+
+### Monitoring Stack Components
+
+- **Prometheus Server**: Scrapes cluster metrics every 15 seconds, storing CPU, memory, network I/O, and HTTP request metrics in a time-series database.
+- **Node Exporter**: Runs as a `DaemonSet` on the EC2 instance collecting OS-level telemetry (load average, disk saturation, memory leaks).
+- **kube-state-metrics**: Monitors Kubernetes object states (pod restarts, pending pods, replica availability, deployment rollout progression).
+- **Grafana**: Interactive visualization dashboards configured to monitor:
+  - **Kubernetes Cluster Overview**: Overall CPU and memory reservation across nodes.
+  - **Pod Performance**: Resource consumption of `gram-mitra-backend` pods across the 2 replicas.
+  - **Network & Request Rates**: HTTP status codes, latency, and traffic volume.
+- **Alertmanager**: Triggers alerts for pod crash loops, memory threshold breaches (>80%), or probe failures.
+
+---
+
+## 🗄️ Database Architecture & Supabase PostgreSQL
+
+Gram-Mitra utilizes **PostgreSQL hosted on Supabase**. All DDL scripts, relationship constraints, check validations, performance indexes, and automatic triggers are defined in [`src/db/schema.sql`](file:///c:/Users/kirve/OneDrive/Desktop/gram-mitra/backend/src/db/schema.sql).
+
+### Entity Relationship Diagram
+
+```mermaid
+erDiagram
+    PROFILES ||--o{ VILLAGE_PROBLEMS : "reports"
+    PROFILES ||--o{ PROBLEM_UPDATES : "updates"
+    PROFILES ||--o{ PRODUCTS : "lists"
+    PROFILES ||--o{ ORDERS : "places as buyer"
+    PROFILES ||--o{ ORDERS : "fulfills as seller"
+    HOSPITALS ||--o{ HOSPITAL_SERVICES : "provides"
+    VILLAGE_PROBLEMS ||--o{ PROBLEM_UPDATES : "tracks history"
+    PRODUCTS ||--o{ ORDERS : "purchased in"
 ```
 
-### Pipeline Highlights
-- **Automated Testing**: Aborts pipeline if any unit or integration test fails.
-- **Docker Image Packaging**: Generates tagged image `gram-mitra-backend:latest`.
-- **Zero-Downtime Rollout**: Uses `kubectl rollout restart deployment/gram-mitra-backend` and checks `kubectl rollout status`.
-- For complete setup instructions including Jenkins plugins and Minikube permissions, see [`JENKINS_SETUP.md`](file:///c:/Users/kirve/OneDrive/Desktop/gram-mitra/backend/JENKINS_SETUP.md).
+### Table Schema Summary
+
+| Table | Primary Key | Description & Key Columns |
+|---|---|---|
+| `profiles` | `id` (UUID references `auth.users`) | Extended user profiles (`full_name`, `phone`, `email`, `age`, `state`, `district`, `village`, `profile_image_url`). |
+| `hospitals` | `id` (UUID) | Human & veterinary facilities (`name`, `type` [`human` \| `animal`], `address`, `district`, `state`, `latitude`, `longitude`, `phone`, `is_emergency`, `is_active`). |
+| `hospital_services` | `id` (UUID) | Clinical services (`hospital_id` FK, `service_name`, `description`, `available`). |
+| `village_problems` | `id` (UUID) | Grievance tickets (`reported_by` FK, `title`, `description`, `category` [`water`, `road`, `electricity`, `agriculture`, `healthcare`, `sanitation`, `animal`, `other`], `status` [`reported`, `under_review`, `in_progress`, `resolved`, `rejected`], `priority` [`low`, `medium`, `high`, `urgent`], coordinates). |
+| `problem_updates` | `id` (UUID) | Chronological status history (`problem_id` FK, `updated_by` FK, `status`, `comment`, `image_url`). |
+| `products` | `id` (UUID) | Farmer marketplace listings (`seller_id` FK, `name`, `category`, `price`, `unit`, `quantity`, `is_available`, `district`, `state`). |
+| `orders` | `id` (UUID) | Marketplace orders (`product_id` FK, `buyer_id` FK, `seller_id` FK, `quantity`, `unit_price`, `total_price`, `status`, `payment_method`, `payment_status`). |
+| `ngos` | `id` (UUID) | Accredited partner NGOs (`name`, `category`, `phone`, `email`, `address`, `district`, `state`, `services`, `is_active`). |
+| `myths` | `id` (UUID) | Myth vs Fact entries (`title`, `myth`, `fact`, `explanation`, `category`, `language`, `source`, `is_verified`). |
+
+---
+
+## 🌟 Platform Application Modules
+
+1. **🏥 Rural Healthcare & Veterinary Network**:
+   - Dual directory of Human Hospitals (PHCs, CHCs, Civil Hospitals) and Veterinary Clinics.
+   - Real-time GPS radius search using Haversine formula calculation.
+   - 24/7 Emergency Facilities & National Helplines: `108` (Ambulance), `102` (Mother & Child), `104` (Health Advice), `1962` (Veterinary Emergency), `112` (National All-in-One Emergency).
+2. **📢 Village Grievance Redressal**:
+   - Geotagged issue submission for rural infrastructure problems.
+   - Status transitions with full historical audit logs.
+3. **🏛️ Government Schemes Integration**:
+   - Live query integration with **data.gov.in** PM-KISAN dataset with resilient in-memory caching and fallbacks.
+   - Curated directory for PMAY-G, MGNREGA, PMFBY, Ayushman Bharat.
+4. **🌾 Farmer Produce Marketplace**:
+   - Direct farmer-to-buyer transactions.
+   - Real-time stock validation, automated inventory deduction, and cancellation inventory rollback.
+5. **🤝 Partner NGOs Directory**:
+   - Search non-profits by domain (agriculture, water conservation, education, women empowerment).
+6. **💡 Myth vs Fact (Superstition Buster)**:
+   - Debunking rural misconceptions with verified medical, agricultural, and scientific citations.
+7. **🎙️ AI Voice Mentor Assistant**:
+   - Bilingual voice interface powered by Vapi Web SDK for low-literacy rural accessibility.
+
+---
+
+## 📁 Repository & Directory Layout
+
+```text
+backend/
+├── src/
+│   ├── server.js               # Entry point, HTTP listener & graceful shutdown handlers
+│   ├── app.js                  # Express application setup, security headers & route mounting
+│   ├── config/                 # Environment & Supabase initialization
+│   ├── controllers/            # Request handlers & validation logic
+│   ├── routes/                 # Express Router modular definitions (/api/v1)
+│   ├── services/               # Core business logic & external integrations
+│   ├── models/                 # Database table schema constants
+│   ├── middleware/             # Auth (requireAuth/optionalAuth), Error Handler, 404
+│   ├── utils/                  # Structured logger & standardized JSON formatters
+│   ├── db/
+│   │   └── schema.sql          # PostgreSQL DDL (Tables, Indexes, Triggers)
+│   └── scripts/
+│       └── test-db.js          # Supabase connectivity & schema check script
+├── tests/                      # Jest & Supertest integration test suite
+├── k8s/                        # Kubernetes production manifests
+│   ├── configmap.yaml          # ConfigMap (runtime environment parameters)
+│   ├── deployment.yaml         # Deployment (2 Replicas, Probes, Limits)
+│   ├── secret.yaml             # K8s Secrets (Supabase, API tokens)
+│   ├── secret.example.template # Secret template for base64 encoding
+│   └── service.yaml            # NodePort Service (Port 5000 -> 30442)
+├── Dockerfile                  # Lightweight Node 22-Alpine container image
+├── docker-compose.yml          # Local multi-container Docker runner
+├── docker-compose.jenkins.yml  # Jenkins runner configuration
+├── Jenkinsfile                 # 8-stage automated CI/CD pipeline with SonarQube & K8s
+├── JENKINS_SETUP.md            # Complete Jenkins setup & configuration guide
+├── sonar-project.properties    # SonarQube code quality & SAST configuration
+├── .env.example                # Environment variables template
+└── package.json                # Project dependencies & npm scripts
+```
+
+---
+
+## ⚙️ Environment Configuration
+
+Create `.env` in `backend/` by copying `.env.example`:
+
+```env
+# Server Configuration
+PORT=5000
+NODE_ENV=production
+APP_NAME=Gram Mitra Backend
+API_VERSION=v1
+CORS_ORIGIN=*
+
+# Database / Supabase Configuration
+DATABASE_URL=postgresql://postgres:[PASSWORD]@db.[REF].supabase.co:5432/postgres
+SUPABASE_URL=https://[YOUR-PROJECT].supabase.co
+SUPABASE_ANON_KEY=[YOUR-ANON-KEY]
+SUPABASE_SERVICE_ROLE_KEY=[YOUR-SERVICE-ROLE-KEY]
+
+# Government Schemes API (data.gov.in)
+DATA_GOV_API_KEY=[YOUR-DATA-GOV-KEY]
+DATA_GOV_BASE_URL=https://api.data.gov.in/resource
+DATA_GOV_RESOURCE_ID=388208c6-d82a-4190-90df-91aa2c326fec
+DATA_GOV_CACHE_TTL_MS=600000
+
+# Vapi AI Voice Agent
+VAPI_PUBLIC_KEY=[YOUR-VAPI-KEY]
+VAPI_ASSISTANT_ID=[YOUR-VAPI-ASSISTANT-ID]
+VAPI_SERVER_SECRET=[YOUR-WEBHOOK-SECRET]
+```
+
+---
+
+## 📡 Complete REST API Reference
+
+All routes are mounted under `/api/v1` (with `/` available for root health checks).
+
+### System & Health Endpoints
+- `GET /` — Root service verification (`200 OK`)
+- `GET /api/v1/health` — System status, uptime, and memory diagnostics (`200 OK`)
+
+### Authentication & Profiles (`/api/v1/auth`)
+- `POST /api/v1/auth/register` — Register user with email/phone & profile
+- `POST /api/v1/auth/login` — Sign in and receive JWT token
+- `GET /api/v1/auth/me` — Fetch authenticated user profile *(Bearer Auth)*
+- `PUT /api/v1/auth/me` — Update user profile details *(Bearer Auth)*
+- `POST /api/v1/auth/logout` — Invalidate user session *(Bearer Auth)*
+
+### Healthcare & Veterinary Directory (`/api/v1/healthcare`)
+- `GET /api/v1/healthcare` — Browse all facilities (filters: `type`, `district`, `search`, `radius`)
+- `GET /api/v1/healthcare/nearby` — Real-time GPS search (`lat`, `lng`, `radius` in km)
+- `GET /api/v1/healthcare/emergency` — 24/7 facilities and national emergency helplines
+- `GET /api/v1/healthcare/hospitals` — List human hospitals, PHCs, & CHCs
+- `POST /api/v1/healthcare/hospitals` — Register a human hospital
+- `GET /api/v1/healthcare/veterinary` — List animal clinics & dispensaries
+- `POST /api/v1/healthcare/veterinary` — Register a veterinary facility
+- `GET /api/v1/healthcare/services/catalog` — Curated rural health programs
+
+### Village Problems & Grievances (`/api/v1/village-problems`)
+- `POST /api/v1/village-problems` — Report a village problem with coordinates & category
+- `GET /api/v1/village-problems` — Query tickets (filters: `status`, `priority`, `district`, `village`)
+- `GET /api/v1/village-problems/stats` — Resolution rate & category statistics
+- `PATCH /api/v1/village-problems/:id/status` — Advance status (`reported` ➔ `in_progress` ➔ `resolved`)
+- `GET /api/v1/village-problems/:id/history` — Chronological audit trail of updates
+
+### Government Schemes (`/api/v1/schemes`)
+- `GET /api/v1/schemes` — Live PM-KISAN village beneficiary records from data.gov.in
+- `GET /api/v1/schemes/catalog` — Flagship rural schemes catalog (PMAY-G, MGNREGA, PMFBY)
+- `GET /api/v1/schemes/stats` — Aggregated beneficiary metrics
+
+### Farmer Marketplace (`/api/v1/marketplace`)
+- `GET /api/v1/marketplace/products` — Browse produce with filters (`category`, `price`, `district`)
+- `POST /api/v1/marketplace/products` — Publish new produce listing
+- `POST /api/v1/marketplace/orders` — Place order with atomic stock deduction
+- `PATCH /api/v1/marketplace/orders/:id/status` — Advance order state (`pending` ➔ `delivered`)
+- `DELETE /api/v1/marketplace/orders/:id` — Cancel order with automatic stock rollback
+
+### Partner NGOs (`/api/v1/ngos`)
+- `GET /api/v1/ngos` — Directory of non-profit partners
+- `GET /api/v1/ngos/categories` — Categories with distribution metrics
+- `POST /api/v1/ngos` — Register new partner NGO
+
+### Myth vs Fact (`/api/v1/superstitions`)
+- `GET /api/v1/superstitions` — Myth vs Fact entries
+- `GET /api/v1/superstitions/random` — Random Myth of the Day
+- `PATCH /api/v1/superstitions/:id/verify` — Verify entry with scientific citation
+
+### AI Voice Mentor (`/api/v1/voice`)
+- `POST /api/v1/voice/session` — Initialize Vapi Web Call session
+- `GET /api/v1/voice/config` — Retrieve mentor configurations
+- `POST /api/v1/voice/webhook` — Vapi webhook listener for call reports & tool calls
+
+---
+
+## 🧪 Testing & Quality Assurance
+
+Integration tests validate all endpoints and logic using **Jest** and **Supertest**:
+
+```bash
+# Run complete test suite
+npm test
+
+# Run tests with code coverage output for SonarQube
+npm test -- --coverage
+
+# Run a specific domain suite
+npx jest tests/healthcare.test.js
+npx jest tests/marketplace.test.js
+npx jest tests/problem.test.js
+```
+
+---
+
+## 🚀 Quick Start & Operations Runbook
+
+### 1. Local Development
+```bash
+# 1. Install dependencies
+npm install
+
+# 2. Check Supabase connection
+npm run db:check
+
+# 3. Start development server with auto-reload
+npm run dev
+```
+
+### 2. Kubernetes Deployment on AWS EC2
+```bash
+# 1. Apply Kubernetes ConfigMap & Secrets
+kubectl apply -f k8s/configmap.yaml
+kubectl apply -f k8s/secret.yaml
+
+# 2. Deploy Gram-Mitra Backend (2 Replicas) & NodePort Service
+kubectl apply -f k8s/deployment.yaml
+kubectl apply -f k8s/service.yaml
+
+# 3. Verify Rollout & Pod Status
+kubectl get pods -l app=gram-mitra-backend -o wide
+kubectl get service gram-mitra-backend-service
+
+# 4. Access Backend via NodePort 30442
+curl http://<AWS-EC2-PUBLIC-IP>:30442/api/v1/health
+```
 
 ---
 
 ## ❓ Troubleshooting & FAQs
 
-### Q1: `npm run db:check` reports missing tables
-**Solution**: Run the [`src/db/schema.sql`](file:///c:/Users/kirve/OneDrive/Desktop/gram-mitra/backend/src/db/schema.sql) file directly inside your Supabase Project's SQL Editor. Once executed, re-run `npm run db:check`.
+### Q1: SonarQube Quality Gate fails during Jenkins build
+- Check the Jenkins Console Output and your SonarQube project dashboard at `http://<SONARQUBE-IP>:9000`.
+- Address any blocker/critical bugs or missing test coverage in your source code.
+- Ensure `coverage/lcov.info` is generated before scanner execution by running `npm test -- --coverage`.
 
-### Q2: 401 Unauthorized errors on `/api/v1/auth/me`
-**Solution**: Include the header `Authorization: Bearer <access_token>` in your request. The token is obtained from the `POST /api/v1/auth/login` or `POST /api/v1/auth/register` response.
+### Q2: Pods are in `CrashLoopBackOff` status
+- Run `kubectl describe pod <pod-name>` and `kubectl logs <pod-name>` to inspect startup errors.
+- Ensure `k8s/secret.yaml` has valid base64-encoded strings for `SUPABASE_URL` and `SUPABASE_ANON_KEY`.
 
-### Q3: External Government Schemes API timeout
-**Solution**: Gram Mitra implements an in-memory cached fallback. If `data.gov.in` is temporarily unreachable or slow, the server automatically returns cached entries or fallback rural scheme records without breaking client applications.
+### Q3: Cannot access NodePort 30442 from outside AWS
+- Check your **AWS EC2 Security Group** inbound rules. Ensure port `30442` is open for TCP traffic from `0.0.0.0/0`.
+- Verify the NodePort service is running: `kubectl get svc gram-mitra-backend-service`.
 
-### Q4: Port 5000 is already in use
-**Solution**: Change `PORT=5001` in your `.env` file or terminate the process occupying port 5000:
-```powershell
-# Windows PowerShell
-netstat -ano | findstr :5000
-Stop-Process -Id <PID> -Force
-```
+### Q4: Prometheus is not discovering Gram-Mitra pods
+- Verify the pods have proper labels (`app: gram-mitra-backend`).
+- Add a `ServiceMonitor` or pod annotation in `deployment.yaml` (`prometheus.io/scrape: "true"`, `prometheus.io/port: "5000"`).
 
 ---
 
@@ -646,4 +653,5 @@ Stop-Process -Id <PID> -Force
 
 - **Project**: Gram Mitra (Rural Connect)
 - **License**: ISC
-- **Data Source Attribution**: Open Government Data (OGD) Platform India ([data.gov.in](https://data.gov.in))
+- **Docker Image**: [`ak3806/gram-mitra-backend:latest`](https://hub.docker.com/r/ak3806/gram-mitra-backend)
+- **Data Source**: Open Government Data (OGD) Platform India ([data.gov.in](https://data.gov.in))
