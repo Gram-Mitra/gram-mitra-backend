@@ -80,9 +80,12 @@ const handleVapiWebhook = async (req, res, next) => {
 
     logger.info(`[Vapi Webhook] Event: '${message.type}' | EndedReason: '${message.endedReason || 'N/A'}'`);
 
-    // 1. Assistant Request (Vapi checking if you want to override assistant)
+    // 1. Assistant Request (Vapi checking which assistant to assign to call)
     if (message.type === 'assistant-request') {
-      // Returning empty object tells Vapi to use the existing dashboard assistant config
+      if (config.vapi.assistantId) {
+        logger.info(`[Vapi Webhook] Assigning assistantId: ${config.vapi.assistantId}`);
+        return res.status(200).json({ assistantId: config.vapi.assistantId });
+      }
       return res.status(200).json({});
     }
 
